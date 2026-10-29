@@ -1,0 +1,46 @@
+**********************
+PowerShell transcript start
+Start time: 20261029202742
+Username: LAPTOP-EUB58E7H\Katya Reutova
+RunAs User: LAPTOP-EUB58E7H\Katya Reutova
+Configuration Name: 
+Machine: LAPTOP-EUB58E7H (Microsoft Windows NT 10.0.19045.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll -Command Start-Transcript -Path "C:\BIU01\HW\1\terminal-session.txt" -Append
+Process ID: 27704
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.19045
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\BIU01\HW\1\terminal-session.txt
+PS>$global:?
+True
+**********************
+PowerShell transcript end
+End time: 20261029202742
+**********************
+**********************
+PowerShell transcript start
+Start time: 20261029202946
+Username: LAPTOP-EUB58E7H\Katya Reutova
+RunAs User: LAPTOP-EUB58E7H\Katya Reutova
+Configuration Name: 
+Machine: LAPTOP-EUB58E7H (Microsoft Windows NT 10.0.19045.0)
+Host Application: C:\Program Files\PowerShell\7\pwsh.dll
+Process ID: 4204
+PSVersion: 7.6.9
+PSEdition: Core
+GitCommitId: 7.6.9
+OS: Microsoft Windows 10.0.19045
+Platform: Win32NT
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1, 6.0, 7.0
+PSRemotingProtocolVersion: 2.4
+SerializationVersion: 1.1.0.1
+WSManStackVersion: 3.0
+**********************
+Transcript started, output file is C:\BIU01\HW\1\terminal-session.txt
