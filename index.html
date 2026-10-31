@@ -5,45 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>משחקי הכס — הטוען האחרון לכתר | Game of Thrones — The Last Claimant</title>
 
-  <!-- Google Fonts: Frank Ruhl Libre (Hebrew serif), Heebo (Hebrew sans), Cinzel (Royal Display) -->
+  <!-- Google Fonts: Frank Ruhl Libre (Hebrew Serif Display), Heebo (Sans UI), Cinzel & Cinzel Decorative (Royal Display) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cinzel+Decorative:wght@700;900&family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Three.js CDN (with automatic fallback to cinematic 2D Canvas engine) -->
+  <!-- Three.js CDN (with automatic fallback to high-performance procedural 2D Canvas engine) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
     /* ==========================================================================
-       DESIGN TOKENS & CSS RESET (Strictly adhering to PRD 5.2 & 10.1)
+       DESIGN TOKENS & CINEMATIC PALETTE (PRD 5.2 & 10.1)
        ========================================================================== */
     :root {
-      /* Palette from PRD Section 5.2 */
-      --color-obsidian: #08080C;
-      --color-charcoal: #12131A;
-      --color-charcoal-glass: rgba(18, 19, 26, 0.82);
+      --color-obsidian: #07070a;
+      --color-charcoal: #111219;
+      --color-glass: rgba(14, 15, 22, 0.78);
       --color-aged-gold: #D4AF37;
       --color-burnished-gold: #C5A059;
       --color-gold-glow: rgba(212, 175, 55, 0.45);
       --color-dragonfire: #FF5722;
-      --color-dragonfire-glow: rgba(255, 87, 34, 0.4);
+      --color-dragonfire-glow: rgba(255, 87, 34, 0.45);
       --color-glacial-blue: #00E5FF;
-      --color-frost-glow: rgba(0, 229, 255, 0.35);
+      --color-frost-glow: rgba(0, 229, 255, 0.4);
       --color-blood-crimson: #8B0000;
-      --color-valyrian-steel: #9E9E9E;
+      --color-valyrian-steel: #A0A5AD;
       --color-parchment: #F5F5F0;
-      --color-parchment-muted: #C8C8C0;
+      --color-parchment-muted: #B8B8B0;
 
-      /* Typography */
       --font-display: 'Frank Ruhl Libre', 'Cinzel', serif;
-      --font-latin-royal: 'Cinzel', 'Cinzel Decorative', serif;
+      --font-royal: 'Cinzel Decorative', 'Cinzel', serif;
       --font-body: 'Heebo', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: 'Courier Prime', monospace;
 
-      /* Transition Timers */
-      --trans-fast: 0.25s ease;
-      --trans-medium: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-      --trans-slide: 0.65s cubic-bezier(0.25, 1, 0.5, 1);
+      --trans-quick: 0.25s ease;
+      --trans-smooth: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      --trans-cinema: 0.7s cubic-bezier(0.2, 0.9, 0.25, 1);
     }
 
     *, *::before, *::after {
@@ -51,14 +48,13 @@
       margin: 0;
       padding: 0;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
     }
 
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background-color: var(--color-obsidian);
+      background: var(--color-obsidian);
       color: var(--color-parchment);
       font-family: var(--font-body);
       direction: rtl;
@@ -66,10 +62,10 @@
       user-select: none;
     }
 
-    /* Directional BiDi & Numeric Isolation */
+    /* BiDi & Numeric Isolation */
     bdi, .bdi {
       unicode-bidi: isolate;
-      font-family: var(--font-latin-royal);
+      font-family: var(--font-royal);
       letter-spacing: 0.5px;
     }
 
@@ -81,14 +77,14 @@
       font-weight: 700;
     }
 
-    /* Accessibility focus outline */
-    button:focus-visible, .interactive-card:focus-visible, input:focus-visible {
+    /* Interactive element focus outlines */
+    button:focus-visible, input:focus-visible, .interactive-item:focus-visible {
       outline: 2px solid var(--color-aged-gold);
       outline-offset: 3px;
     }
 
     /* ==========================================================================
-       BACKGROUND & CANVASES (ATMOSPHERIC ENGINE)
+       ATMOSPHERIC CANVAS & CINEMATIC VIGNETTE
        ========================================================================== */
     #bg-canvas {
       position: fixed;
@@ -108,12 +104,12 @@
       height: 100vh;
       z-index: 2;
       pointer-events: none;
-      background: radial-gradient(circle at center, transparent 40%, rgba(8, 8, 12, 0.85) 90%),
-                  linear-gradient(to bottom, rgba(8,8,12,0.6) 0%, transparent 15%, transparent 85%, rgba(8,8,12,0.8) 100%);
+      background: radial-gradient(circle at center, transparent 35%, rgba(7, 7, 10, 0.88) 95%),
+                  linear-gradient(to bottom, rgba(7,7,10,0.65) 0%, transparent 15%, transparent 85%, rgba(7,7,10,0.85) 100%);
     }
 
     /* ==========================================================================
-       APPLICATION CONTAINER & PERSISTENT HEADER/FOOTER
+       PRESENTATION SHELL & PERSISTENT BARS
        ========================================================================== */
     #presentation-app {
       position: relative;
@@ -126,30 +122,31 @@
       overflow: hidden;
     }
 
-    /* Header Bar */
+    /* Header */
     #app-header {
       position: relative;
       width: 100%;
-      height: 72px;
-      padding: 0 40px;
+      height: 68px;
+      padding: 0 44px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 20;
-      background: linear-gradient(180deg, rgba(8,8,12,0.85) 0%, rgba(8,8,12,0) 100%);
+      background: linear-gradient(180deg, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0) 100%);
     }
 
     .brand-group {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
+      cursor: pointer;
     }
 
     .brand-crest {
-      width: 34px;
-      height: 34px;
+      width: 32px;
+      height: 32px;
       fill: var(--color-aged-gold);
-      filter: drop-shadow(0 0 8px var(--color-gold-glow));
+      filter: drop-shadow(0 0 10px var(--color-gold-glow));
     }
 
     .brand-text {
@@ -159,7 +156,7 @@
 
     .brand-title {
       font-family: var(--font-display);
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       font-weight: 900;
       color: var(--color-aged-gold);
       letter-spacing: 0.5px;
@@ -167,27 +164,27 @@
     }
 
     .brand-sub {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--color-valyrian-steel);
-      font-family: var(--font-body);
-      letter-spacing: 0.3px;
+      font-family: var(--font-royal);
+      letter-spacing: 1px;
     }
 
-    /* Slide Counter & Progress */
+    /* Slide Counter & Jump Dots */
     .header-indicators {
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 22px;
     }
 
     #slide-counter {
       font-family: var(--font-display);
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: var(--color-parchment-muted);
-      background: rgba(18, 19, 26, 0.7);
-      padding: 6px 16px;
+      background: rgba(14, 15, 22, 0.75);
+      padding: 5px 16px;
       border-radius: 20px;
-      border: 1px solid rgba(212, 175, 55, 0.25);
+      border: 1px solid rgba(212, 175, 55, 0.28);
       backdrop-filter: blur(8px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
@@ -197,7 +194,6 @@
       font-weight: 700;
     }
 
-    /* Top Progress Bar with Filigree Glow */
     #progress-container {
       position: absolute;
       top: 0;
@@ -210,12 +206,11 @@
     #progress-bar {
       height: 100%;
       width: 10%;
-      background: linear-gradient(90deg, var(--color-burnished-gold), var(--color-aged-gold), #FFF2A3);
+      background: linear-gradient(90deg, var(--color-burnished-gold), var(--color-aged-gold), #FFF3A6);
       box-shadow: 0 0 10px var(--color-gold-glow);
-      transition: width var(--trans-medium);
+      transition: width var(--trans-smooth);
     }
 
-    /* Jump Dots navigation */
     .jump-dots-nav {
       display: flex;
       align-items: center;
@@ -223,14 +218,13 @@
     }
 
     .jump-dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.18);
       border: 1px solid rgba(212, 175, 55, 0.3);
       cursor: pointer;
-      transition: all var(--trans-fast);
-      position: relative;
+      transition: all var(--trans-quick);
     }
 
     .jump-dot:hover {
@@ -240,27 +234,27 @@
 
     .jump-dot.active {
       background: var(--color-aged-gold);
-      box-shadow: 0 0 8px var(--color-aged-gold);
+      box-shadow: 0 0 10px var(--color-aged-gold);
       transform: scale(1.4);
       border-color: #fff;
     }
 
     .jump-dot.gated {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
-    /* Footer Nav Controls */
+    /* Footer Controls */
     #app-footer {
       position: relative;
       width: 100%;
-      height: 76px;
-      padding: 0 40px;
+      height: 72px;
+      padding: 0 44px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 20;
-      background: linear-gradient(0deg, rgba(8,8,12,0.92) 0%, rgba(8,8,12,0) 100%);
+      background: linear-gradient(0deg, rgba(7,7,10,0.92) 0%, rgba(7,7,10,0) 100%);
     }
 
     .keyboard-legend {
@@ -294,32 +288,20 @@
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 10px 24px;
-      background: rgba(18, 19, 26, 0.85);
+      padding: 9px 24px;
+      background: rgba(14, 15, 22, 0.85);
       border: 1px solid var(--color-aged-gold);
       color: var(--color-parchment);
       font-family: var(--font-display);
-      font-size: 1rem;
+      font-size: 0.98rem;
       font-weight: 700;
       cursor: pointer;
       border-radius: 6px;
       backdrop-filter: blur(10px);
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(212, 175, 55, 0.1);
-      transition: all var(--trans-fast);
+      transition: all var(--trans-quick);
       position: relative;
       overflow: hidden;
-    }
-
-    .nav-btn::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, rgba(212,175,55,0.2) 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity var(--trans-fast);
     }
 
     .nav-btn:hover:not(:disabled) {
@@ -329,33 +311,29 @@
       transform: translateY(-2px);
     }
 
-    .nav-btn:hover::before {
-      opacity: 1;
-    }
-
     .nav-btn:disabled {
-      opacity: 0.35;
+      opacity: 0.3;
       cursor: not-allowed;
-      border-color: rgba(158, 158, 158, 0.4);
+      border-color: rgba(158, 158, 158, 0.3);
       transform: none;
       box-shadow: none;
     }
 
     .nav-btn-primary {
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(18, 19, 26, 0.95) 100%);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.28) 0%, rgba(14, 15, 22, 0.95) 100%);
       border-color: var(--color-aged-gold);
     }
 
     /* ==========================================================================
-       MAIN SLIDES CONTAINER & ANIMATED TRANSITIONS
+       MAIN SLIDES VIEWPORT
        ========================================================================== */
     #slides-container {
       position: relative;
       flex: 1;
       width: 100%;
-      max-width: 1320px;
+      max-width: 1360px;
       margin: 0 auto;
-      padding: 10px 40px;
+      padding: 8px 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -370,15 +348,16 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      align-items: center;
       opacity: 0;
       visibility: hidden;
-      transform: scale(0.96) translateY(18px);
-      transition: opacity var(--trans-slide), transform var(--trans-slide), visibility var(--trans-slide);
+      transform: scale(0.96) translateY(14px);
+      transition: opacity var(--trans-cinema), transform var(--trans-cinema), visibility var(--trans-cinema);
       pointer-events: none;
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: var(--color-aged-gold) transparent;
-      padding: 16px 10px;
+      padding: 10px;
     }
 
     .slide.active {
@@ -388,840 +367,793 @@
       pointer-events: all;
     }
 
-    .slide::-webkit-scrollbar {
-      width: 6px;
-    }
-    .slide::-webkit-scrollbar-thumb {
-      background: rgba(212, 175, 55, 0.3);
-      border-radius: 3px;
-    }
-
-    /* ==========================================================================
-       SHARED GLASSMORPHIC COMPONENTS & CARDS
-       ========================================================================== */
-    .glass-panel {
-      background: var(--color-charcoal-glass);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(212, 175, 55, 0.28);
-      border-radius: 12px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85), inset 0 0 20px rgba(212, 175, 55, 0.05);
-      padding: 32px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .glass-panel::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--color-aged-gold), transparent);
-    }
-
-    /* Filigree ornament headers */
-    .ornament-divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      margin: 16px 0 24px;
-    }
-
-    .ornament-line {
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
-    }
-
-    .ornament-gem {
-      width: 8px;
-      height: 8px;
-      transform: rotate(45deg);
-      background: var(--color-aged-gold);
-      box-shadow: 0 0 8px var(--color-gold-glow);
-    }
-
-    /* Slide Header Block */
-    .slide-heading-block {
+    /* Common visual slide header (Minimal & Punchy) */
+    .slide-header-visual {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
-    .slide-eyebrow {
-      font-family: var(--font-latin-royal);
-      font-size: 0.85rem;
+    .slide-eyebrow-tag {
+      font-family: var(--font-royal);
+      font-size: 0.78rem;
       letter-spacing: 2px;
       color: var(--color-burnished-gold);
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       display: inline-block;
-      text-shadow: 0 0 8px var(--color-gold-glow);
+      text-shadow: 0 0 10px var(--color-gold-glow);
     }
 
-    .slide-title {
+    .slide-visual-title {
       font-family: var(--font-display);
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       font-weight: 900;
       color: #fff;
-      line-height: 1.25;
-      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.3);
+      line-height: 1.2;
+      text-shadow: 0 4px 18px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.35);
     }
 
-    .slide-subtitle {
-      font-size: 1.15rem;
+    .slide-punchline {
+      font-size: 1.05rem;
       color: var(--color-valyrian-steel);
-      margin-top: 8px;
+      margin-top: 6px;
       font-weight: 400;
-      max-width: 820px;
+      max-width: 780px;
       margin-left: auto;
       margin-right: auto;
     }
 
-    .slide-lead-text {
-      font-size: 1.05rem;
-      line-height: 1.7;
-      color: var(--color-parchment);
-      text-align: center;
-      max-width: 900px;
-      margin: 0 auto 24px;
+    /* Optional Info Drawer */
+    .optional-details-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: var(--color-aged-gold);
+      background: transparent;
+      border: 1px dashed rgba(212, 175, 55, 0.4);
+      padding: 4px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all var(--trans-quick);
+    }
+
+    .optional-details-trigger:hover {
+      background: rgba(212, 175, 55, 0.12);
+      border-style: solid;
+      color: #fff;
+    }
+
+    .optional-lore-drawer {
+      display: none;
+      margin-top: 12px;
+      padding: 14px 20px;
+      background: rgba(14, 15, 22, 0.95);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 8px;
+      max-width: 680px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--color-parchment-muted);
+      text-align: right;
+      animation: fadeIn 0.3s ease;
     }
 
     /* ==========================================================================
-       SLIDE-SPECIFIC CUSTOM DESIGNS
+       SLIDE 01 — THE IRON THRONE (הכס ממתין)
+       Heroic throne room composition with swords and gold light
        ========================================================================== */
-
-    /* Slide 01: The Throne Awaits */
-    #slide-01 .hero-content {
+    .throne-hero-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       max-width: 900px;
-      margin: 0 auto;
+      width: 100%;
       text-align: center;
-      padding: 40px 30px;
     }
 
-    .throne-crown-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 16px;
-      fill: var(--color-aged-gold);
-      filter: drop-shadow(0 0 20px var(--color-gold-glow));
-      animation: crownPulse 4s infinite ease-in-out;
+    .iron-throne-art-svg {
+      width: 160px;
+      height: 160px;
+      filter: drop-shadow(0 0 35px var(--color-gold-glow));
+      animation: throneAura 5s infinite ease-in-out;
+      margin-bottom: 12px;
     }
 
-    @keyframes crownPulse {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 15px var(--color-gold-glow)); }
-      50% { transform: scale(1.06); filter: drop-shadow(0 0 30px var(--color-aged-gold)); }
+    @keyframes throneAura {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 25px var(--color-gold-glow)); }
+      50% { transform: scale(1.05); filter: drop-shadow(0 0 45px var(--color-aged-gold)); }
     }
 
-    .hero-btn {
+    .throne-cta-btn {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
-      padding: 16px 42px;
+      gap: 14px;
+      padding: 16px 44px;
       font-size: 1.25rem;
       font-family: var(--font-display);
       font-weight: 900;
-      color: #08080C;
-      background: linear-gradient(135deg, #FFF2A3 0%, var(--color-aged-gold) 50%, #9B7811 100%);
+      color: #07070a;
+      background: linear-gradient(135deg, #FFF3A6 0%, var(--color-aged-gold) 50%, #A67E14 100%);
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 6px 30px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.4);
-      transition: all var(--trans-fast);
+      box-shadow: 0 8px 35px rgba(212, 175, 55, 0.5), inset 0 0 12px #fff;
+      transition: all var(--trans-quick);
       margin-top: 24px;
-      position: relative;
     }
 
-    .hero-btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 10px 40px rgba(212, 175, 55, 0.8), inset 0 0 15px #fff;
+    .throne-cta-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 45px rgba(212, 175, 55, 0.8), inset 0 0 18px #fff;
     }
 
-    .pillars-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+    .throne-visual-pillars {
+      display: flex;
       gap: 20px;
-      margin-top: 36px;
+      margin-top: 32px;
+      width: 100%;
+      justify-content: center;
     }
 
-    .pillar-card {
-      background: rgba(18, 19, 26, 0.6);
-      border: 1px solid rgba(212, 175, 55, 0.18);
-      border-radius: 8px;
-      padding: 18px;
-      text-align: center;
-      transition: all var(--trans-fast);
+    .throne-pillar-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      background: rgba(14, 15, 22, 0.7);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      border-radius: 24px;
+      font-size: 0.88rem;
+      color: var(--color-parchment);
+      backdrop-filter: blur(8px);
     }
 
-    .pillar-card:hover {
-      border-color: var(--color-aged-gold);
-      transform: translateY(-3px);
-      background: rgba(212, 175, 55, 0.08);
-    }
-
-    .pillar-title {
-      font-family: var(--font-display);
-      font-size: 1.05rem;
-      color: var(--color-aged-gold);
-      margin-bottom: 6px;
-      font-weight: 700;
-    }
-
-    .pillar-desc {
-      font-size: 0.85rem;
-      color: var(--color-valyrian-steel);
-    }
-
-    /* Slide 02: Welcome to Westeros (Interactive Tactical Map) */
-    .map-showcase-container {
+    /* ==========================================================================
+       SLIDE 02 — WESTEROS MAP (מפת שבע הממלכות האינטראקטיבית)
+       Visual tactical map of the continent
+       ========================================================================== */
+    .westeros-map-grid {
       display: grid;
-      grid-template-columns: 360px 1fr;
+      grid-template-columns: 1.15fr 0.85fr;
       gap: 24px;
-      align-items: stretch;
-      max-width: 1100px;
-      margin: 0 auto;
+      align-items: center;
+      max-width: 1180px;
       width: 100%;
     }
 
-    .region-selector-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .region-item-btn {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 20px;
-      background: rgba(18, 19, 26, 0.7);
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      border-radius: 8px;
-      color: var(--color-parchment);
-      cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      font-weight: 600;
-      transition: all var(--trans-fast);
-      text-align: right;
-    }
-
-    .region-item-btn:hover {
-      background: rgba(212, 175, 55, 0.12);
-      border-color: var(--color-aged-gold);
-      transform: translateX(-4px);
-    }
-
-    .region-item-btn.active {
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.22) 0%, rgba(18, 19, 26, 0.95) 100%);
-      border-color: var(--color-aged-gold);
-      box-shadow: 0 0 16px rgba(212, 175, 55, 0.25);
-    }
-
-    .region-details-card {
-      background: rgba(18, 19, 26, 0.88);
+    .tactical-map-canvas-frame {
+      position: relative;
+      background: rgba(14, 15, 22, 0.85);
       border: 1px solid rgba(212, 175, 55, 0.35);
       border-radius: 12px;
-      padding: 28px;
+      padding: 16px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .map-svg-board {
+      width: 100%;
+      max-height: 440px;
+      overflow: visible;
+    }
+
+    .map-region-pin {
+      cursor: pointer;
+      transition: all var(--trans-quick);
+    }
+
+    .map-region-pin:hover circle {
+      r: 18;
+      filter: drop-shadow(0 0 12px var(--color-aged-gold));
+    }
+
+    .map-region-pin.active circle {
+      stroke: #fff;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 18px var(--pin-glow, var(--color-aged-gold)));
+    }
+
+    .region-visual-card {
+      background: rgba(14, 15, 22, 0.92);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.85);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      min-height: 400px;
       position: relative;
     }
 
-    .region-badge {
-      display: inline-block;
-      align-self: flex-start;
-      padding: 4px 12px;
-      background: rgba(212, 175, 55, 0.15);
-      border: 1px solid var(--color-aged-gold);
-      border-radius: 4px;
-      color: var(--color-aged-gold);
-      font-size: 0.8rem;
+    .region-banner-sigil {
+      width: 48px;
+      height: 48px;
       margin-bottom: 12px;
-      font-family: var(--font-latin-royal);
+      fill: var(--reg-color, var(--color-aged-gold));
     }
 
-    .region-title {
-      font-family: var(--font-display);
-      font-size: 1.8rem;
-      color: #fff;
-      margin-bottom: 12px;
-    }
-
-    .region-lore {
-      font-size: 1rem;
-      line-height: 1.7;
-      color: var(--color-parchment);
-      margin-bottom: 20px;
-    }
-
-    .region-tactical-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      background: rgba(8, 8, 12, 0.6);
-      padding: 14px;
+    .region-army-meter {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(7, 7, 10, 0.7);
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .tac-stat {
-      text-align: center;
+    .army-meter-bar {
+      height: 6px;
+      border-radius: 3px;
+      background: var(--reg-color, var(--color-aged-gold));
+      margin-top: 6px;
+      box-shadow: 0 0 10px var(--reg-color, var(--color-aged-gold));
+      transition: width var(--trans-smooth);
     }
 
-    .tac-label {
-      font-size: 0.75rem;
-      color: var(--color-valyrian-steel);
-      margin-bottom: 4px;
-    }
-
-    .tac-val {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      color: var(--color-aged-gold);
-      font-weight: 700;
-    }
-
-    /* Slide 03: The Great Houses & Orders */
-    .houses-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      max-width: 1200px;
-      margin: 0 auto;
+    /* ==========================================================================
+       SLIDE 03 — THE GREAT HOUSES & ORDERS (9 בתי האב + משמר הלילה)
+       ========================================================================== */
+    .houses-grand-gallery {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-width: 1220px;
       width: 100%;
     }
 
-    .house-card {
-      background: rgba(18, 19, 26, 0.85);
-      border: 1px solid rgba(212, 175, 55, 0.22);
-      border-radius: 10px;
-      padding: 22px 18px;
+    .traditional-nine-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .heraldic-shield-item {
+      background: rgba(14, 15, 22, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      border-radius: 8px;
+      padding: 12px 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       cursor: pointer;
-      transition: all var(--trans-fast);
+      transition: all var(--trans-quick);
       position: relative;
       overflow: hidden;
     }
 
-    .house-card::before {
+    .heraldic-shield-item::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: var(--house-color, var(--color-aged-gold));
+      height: 3px;
+      background: var(--h-color, var(--color-aged-gold));
     }
 
-    .house-card:hover, .house-card.selected {
-      transform: translateY(-6px);
-      border-color: var(--house-color, var(--color-aged-gold));
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--house-glow, var(--color-gold-glow));
+    .heraldic-shield-item:hover, .heraldic-shield-item.active {
+      transform: translateY(-5px);
+      border-color: var(--h-color, var(--color-aged-gold));
+      box-shadow: 0 8px 24px rgba(0,0,0,0.8), 0 0 16px var(--h-glow, var(--color-gold-glow));
+      background: rgba(20, 22, 32, 0.95);
     }
 
-    .house-sigil-icon {
-      width: 52px;
-      height: 52px;
-      margin-bottom: 14px;
-      fill: var(--house-color, var(--color-aged-gold));
+    .shield-svg-sigil {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 6px;
+      fill: var(--h-color, var(--color-aged-gold));
     }
 
-    .house-name {
+    .shield-house-name {
       font-family: var(--font-display);
-      font-size: 1.3rem;
+      font-size: 0.88rem;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 4px;
     }
 
-    .house-latin-name {
-      font-size: 0.8rem;
+    .shield-house-seat {
+      font-size: 0.7rem;
       color: var(--color-valyrian-steel);
-      margin-bottom: 12px;
     }
 
-    .house-motto {
-      font-family: var(--font-display);
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--color-aged-gold);
-      margin-bottom: 12px;
-      font-style: italic;
+    /* Night's Watch Independent Pedestal */
+    .nights-watch-pedestal {
+      background: linear-gradient(90deg, rgba(14, 15, 22, 0.95) 0%, rgba(25, 27, 36, 0.95) 50%, rgba(14, 15, 22, 0.95) 100%);
+      border: 1px solid rgba(160, 165, 173, 0.4);
+      border-radius: 8px;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
     }
 
-    .house-desc {
-      font-size: 0.85rem;
-      line-height: 1.5;
-      color: var(--color-parchment-muted);
+    .pedestal-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
 
-    /* Slide 04: Fire and Blood */
-    .draconic-container {
+    .pedestal-crow-icon {
+      width: 38px;
+      height: 38px;
+      fill: #A0A5AD;
+    }
+
+    .house-spotlight-box {
+      margin-top: 10px;
+      padding: 12px 20px;
+      background: rgba(14, 15, 22, 0.9);
+      border: 1px solid var(--color-aged-gold);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeIn 0.3s ease;
+    }
+
+    /* ==========================================================================
+       SLIDE 04 — FIRE AND BLOOD (אש ודם — חוויית דרקאריס)
+       ========================================================================== */
+    .draconic-visual-stage {
       display: grid;
       grid-template-columns: 1.1fr 0.9fr;
-      gap: 30px;
+      gap: 28px;
       align-items: center;
-      max-width: 1050px;
-      margin: 0 auto;
+      max-width: 1100px;
       width: 100%;
     }
 
-    .dragon-quote-box {
-      border-right: 4px solid var(--color-dragonfire);
-      padding-right: 20px;
-      margin: 20px 0;
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-style: italic;
-      color: #fff;
-      text-shadow: 0 0 15px var(--color-dragonfire-glow);
+    .dragon-silhouette-card {
+      position: relative;
+      background: radial-gradient(circle at center, rgba(255, 87, 34, 0.25) 0%, rgba(14, 15, 22, 0.9) 70%);
+      border: 1px solid rgba(255, 87, 34, 0.45);
+      border-radius: 14px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 12px 40px rgba(255, 87, 34, 0.2);
     }
 
-    .flame-control-panel {
-      background: rgba(18, 19, 26, 0.85);
-      border: 1px solid rgba(255, 87, 34, 0.4);
+    .dragon-svg-beast {
+      width: 220px;
+      height: 180px;
+      fill: #FF5722;
+      filter: drop-shadow(0 0 25px var(--color-dragonfire));
+      animation: dragonBreathe 4s infinite ease-in-out;
+    }
+
+    @keyframes dragonBreathe {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px var(--color-dragonfire)); }
+      50% { transform: scale(1.06) rotate(-1deg); filter: drop-shadow(0 0 40px #FFA000); }
+    }
+
+    .flame-dial-control {
+      background: rgba(14, 15, 22, 0.88);
+      border: 1px solid rgba(255, 87, 34, 0.35);
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 8px 32px rgba(255, 87, 34, 0.15);
       text-align: center;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8);
     }
 
-    .flame-gauge-display {
-      font-family: var(--font-latin-royal);
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--color-dragonfire);
-      text-shadow: 0 0 20px var(--color-dragonfire-glow);
-      margin: 12px 0;
+    .draconic-crystals-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 18px;
     }
 
-    .flame-slider {
-      width: 100%;
-      height: 8px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      outline: none;
-      -webkit-appearance: none;
-      cursor: pointer;
-    }
-
-    .flame-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--color-dragonfire);
-      box-shadow: 0 0 12px var(--color-dragonfire);
-      cursor: pointer;
-      border: 2px solid #fff;
-    }
-
-    /* Slide 05: Winter Is Coming */
-    .winter-container {
-      display: grid;
-      grid-template-columns: 0.9fr 1.1fr;
-      gap: 30px;
-      align-items: center;
-      max-width: 1050px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .wall-stats-card {
-      background: rgba(18, 19, 26, 0.85);
-      border: 1px solid rgba(0, 229, 255, 0.35);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 8px 32px rgba(0, 229, 255, 0.15);
-    }
-
-    .frost-quote-box {
-      border-right: 4px solid var(--color-glacial-blue);
-      padding-right: 20px;
-      margin: 20px 0;
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      font-style: italic;
+    .draconic-crystal {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255, 87, 34, 0.12);
+      border: 1px solid var(--color-dragonfire);
       color: #fff;
-      text-shadow: 0 0 15px var(--color-frost-glow);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all var(--trans-quick);
     }
 
-    .blizzard-toggle-btn {
+    .draconic-crystal:hover {
+      background: var(--color-dragonfire);
+      box-shadow: 0 0 15px var(--color-dragonfire);
+    }
+
+    /* ==========================================================================
+       SLIDE 05 — WINTER IS COMING (החורף מתקרב — החומה)
+       ========================================================================== */
+    .winter-visual-stage {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 28px;
+      align-items: center;
+      max-width: 1100px;
       width: 100%;
-      padding: 14px;
-      background: rgba(0, 229, 255, 0.1);
+    }
+
+    .ice-wall-monolith {
+      position: relative;
+      background: linear-gradient(180deg, rgba(0, 229, 255, 0.22) 0%, rgba(14, 15, 22, 0.95) 90%);
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      border-radius: 14px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 12px 40px rgba(0, 229, 255, 0.2);
+    }
+
+    .white-walker-eyes {
+      display: flex;
+      gap: 36px;
+      margin: 18px 0;
+    }
+
+    .walker-eye {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #00E5FF;
+      box-shadow: 0 0 25px #00E5FF, 0 0 45px #fff;
+      animation: eyeGaze 3s infinite ease-in-out;
+    }
+
+    @keyframes eyeGaze {
+      0%, 100% { opacity: 0.6; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    .wipe-frost-interactive {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 229, 255, 0.12);
       border: 1px solid var(--color-glacial-blue);
       color: #fff;
       font-family: var(--font-display);
       font-weight: 700;
       border-radius: 8px;
       cursor: pointer;
-      transition: all var(--trans-fast);
-      margin-top: 14px;
+      transition: all var(--trans-quick);
     }
 
-    .blizzard-toggle-btn:hover {
+    .wipe-frost-interactive:hover {
       background: rgba(0, 229, 255, 0.25);
       box-shadow: 0 0 20px var(--color-frost-glow);
     }
 
-    .runes-revealed {
-      display: none;
-      margin-top: 16px;
-      padding: 12px;
-      background: rgba(0, 229, 255, 0.08);
-      border-radius: 6px;
-      font-size: 0.88rem;
-      line-height: 1.6;
-      color: #b3f5ff;
-    }
-
-    /* Slide 06: Choose Your Allegiance [DECISION 1 QUIZ] */
-    .quiz-card-container {
-      max-width: 1050px;
-      margin: 0 auto;
+    /* ==========================================================================
+       SLIDE 06 — CHOOSE YOUR ALLIES [DECISION 1 QUIZ]
+       Visual dilemma cards
+       ========================================================================== */
+    .quiz-interactive-deck {
+      max-width: 980px;
       width: 100%;
-      background: rgba(18, 19, 26, 0.9);
-      border: 1px solid rgba(212, 175, 55, 0.3);
+      background: rgba(14, 15, 22, 0.9);
+      border: 1px solid rgba(212, 175, 55, 0.32);
       border-radius: 14px;
-      padding: 26px 32px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+      padding: 24px 28px;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.85);
     }
 
-    .quiz-steps-header {
+    .quiz-progress-stepper {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      justify-content: space-between;
       padding-bottom: 12px;
       border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-    }
-
-    .quiz-step-indicator {
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      color: var(--color-aged-gold);
-      font-weight: 700;
-    }
-
-    .quiz-question-title {
-      font-family: var(--font-display);
-      font-size: 1.45rem;
-      color: #fff;
       margin-bottom: 18px;
-      line-height: 1.4;
     }
 
-    .quiz-options-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .quiz-options-visual-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
     }
 
-    .quiz-option-btn {
+    .quiz-choice-card {
+      background: rgba(8, 8, 12, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 16px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 14px 20px;
-      background: rgba(8, 8, 12, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 8px;
-      color: var(--color-parchment);
+      gap: 14px;
       cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 1rem;
-      transition: all var(--trans-fast);
+      transition: all var(--trans-quick);
       text-align: right;
     }
 
-    .quiz-option-btn:hover {
+    .quiz-choice-card:hover {
+      border-color: var(--color-aged-gold);
       background: rgba(212, 175, 55, 0.12);
-      border-color: var(--color-aged-gold);
-      transform: translateX(-4px);
+      transform: translateY(-2px);
     }
 
-    .quiz-option-btn.selected {
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.25) 0%, rgba(8, 8, 12, 0.9) 100%);
+    .quiz-choice-card.selected {
       border-color: var(--color-aged-gold);
-      box-shadow: 0 0 16px rgba(212, 175, 55, 0.3);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.25) 0%, rgba(14, 15, 22, 0.95) 100%);
+      box-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
     }
 
-    .quiz-option-letter {
-      width: 30px;
-      height: 30px;
-      display: inline-flex;
+    .quiz-choice-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(212, 175, 55, 0.4);
       color: var(--color-aged-gold);
       font-weight: 700;
       flex-shrink: 0;
     }
 
-    .quiz-result-banner {
+    .quiz-locked-result-bar {
       display: none;
-      margin-top: 20px;
-      padding: 16px 20px;
-      background: linear-gradient(90deg, rgba(212, 175, 55, 0.2) 0%, rgba(18, 19, 26, 0.95) 100%);
+      margin-top: 16px;
+      padding: 14px 20px;
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0.22) 0%, rgba(14, 15, 22, 0.95) 100%);
       border: 1px solid var(--color-aged-gold);
       border-radius: 8px;
       text-align: center;
       animation: fadeIn 0.4s ease;
     }
 
-    /* Slide 07: The Great War */
-    .battle-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      max-width: 1100px;
-      margin: 0 auto;
+    /* ==========================================================================
+       SLIDE 07 — THE GREAT WAR (המלחמה הגדולה — תגובה דינמית)
+       Dynamically reacts to chosen faction
+       ========================================================================== */
+    .battlefield-visual-stage {
+      max-width: 1080px;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
 
-    .battle-sector-card {
-      background: rgba(18, 19, 26, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+    .dynamic-faction-strike-banner {
+      background: linear-gradient(90deg, rgba(14, 15, 22, 0.95) 0%, rgba(212, 175, 55, 0.18) 50%, rgba(14, 15, 22, 0.95) 100%);
+      border: 1px solid var(--color-aged-gold);
+      border-radius: 10px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+    }
+
+    .battlefield-fronts-deck {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .battle-front-card {
+      background: rgba(14, 15, 22, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 10px;
       padding: 20px;
       cursor: pointer;
-      transition: all var(--trans-fast);
+      transition: all var(--trans-quick);
     }
 
-    .battle-sector-card:hover, .battle-sector-card.active {
+    .battle-front-card.active, .battle-front-card:hover {
       border-color: var(--color-dragonfire);
-      box-shadow: 0 0 20px rgba(255, 87, 34, 0.25);
+      box-shadow: 0 0 25px rgba(255, 87, 34, 0.3);
     }
 
-    .clash-meter-wrapper {
-      margin-top: 14px;
-    }
-
-    .clash-meter-bar {
-      height: 8px;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--color-glacial-blue) 0%, #fff 50%, var(--color-dragonfire) 100%);
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-    }
-
-    /* Slide 08: The Final Decision [DECISION 2 DOCTRINES] */
-    .doctrines-grid {
+    /* ==========================================================================
+       SLIDE 08 — THE FUTURE OF WESTEROS [DECISION 2 DOCTRINE CARDS]
+       ========================================================================== */
+    .doctrines-tarot-deck {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      max-width: 1050px;
-      margin: 0 auto;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      max-width: 1200px;
       width: 100%;
     }
 
-    .doctrine-card {
-      background: rgba(18, 19, 26, 0.85);
+    .doctrine-tarot-card {
+      background: rgba(14, 15, 22, 0.88);
       border: 1px solid rgba(212, 175, 55, 0.25);
       border-radius: 12px;
-      padding: 24px;
+      padding: 22px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
       cursor: pointer;
-      transition: all var(--trans-fast);
+      transition: all var(--trans-quick);
       position: relative;
     }
 
-    .doctrine-card:hover {
+    .doctrine-tarot-card:hover {
+      transform: translateY(-6px);
       border-color: var(--color-aged-gold);
-      transform: translateY(-4px);
       box-shadow: 0 12px 30px rgba(0,0,0,0.8), 0 0 20px var(--color-gold-glow);
     }
 
-    .doctrine-card.selected {
-      border-color: #FFF2A3;
-      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(18, 19, 26, 0.95) 100%);
-      box-shadow: 0 12px 35px rgba(212, 175, 55, 0.35);
+    .doctrine-tarot-card.selected {
+      border-color: #FFF3A6;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22) 0%, rgba(14, 15, 22, 0.95) 100%);
+      box-shadow: 0 12px 35px rgba(212, 175, 55, 0.4);
     }
 
-    .doctrine-badge {
-      font-size: 0.8rem;
-      color: var(--color-aged-gold);
-      font-family: var(--font-latin-royal);
-      margin-bottom: 8px;
+    .doctrine-svg-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 12px;
+      fill: var(--color-aged-gold);
     }
 
-    .doctrine-name {
-      font-family: var(--font-display);
-      font-size: 1.35rem;
-      color: #fff;
-      margin-bottom: 10px;
-      font-weight: 700;
-    }
-
-    .doctrine-desc {
-      font-size: 0.92rem;
-      line-height: 1.6;
-      color: var(--color-parchment-muted);
-    }
-
-    /* Slide 09: The Fate of the Realm (Metrics Dashboard) */
-    .metrics-dashboard {
-      max-width: 1000px;
-      margin: 0 auto;
-      width: 100%;
-      background: rgba(18, 19, 26, 0.88);
-      border: 1px solid rgba(212, 175, 55, 0.35);
+    .royal-wax-seal {
+      display: none;
+      position: absolute;
+      bottom: 12px;
+      padding: 3px 12px;
+      background: #8B0000;
+      border: 1px solid #FF5252;
       border-radius: 14px;
-      padding: 30px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.9);
-    }
-
-    .metric-row {
-      margin-bottom: 24px;
-    }
-
-    .metric-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-    }
-
-    .metric-value-text {
-      color: var(--color-aged-gold);
+      font-size: 0.72rem;
       font-weight: 700;
-      font-family: var(--font-mono);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(139, 0, 0, 0.8);
     }
 
-    .metric-bar-bg {
-      height: 12px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .doctrine-tarot-card.selected .royal-wax-seal {
+      display: block;
+      animation: fadeIn 0.3s ease;
     }
 
-    .metric-bar-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 6px;
-      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .fill-stability {
-      background: linear-gradient(90deg, #D4AF37, #FFD700);
-      box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
-    }
-
-    .fill-prosperity {
-      background: linear-gradient(90deg, #4CAF50, #81C784);
-      box-shadow: 0 0 12px rgba(76, 175, 80, 0.5);
-    }
-
-    .fill-defense {
-      background: linear-gradient(90deg, #00E5FF, #2979FF);
-      box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
-    }
-
-    .fate-synthesis-text {
-      margin-top: 24px;
-      padding: 18px 22px;
-      background: rgba(8, 8, 12, 0.6);
-      border-radius: 8px;
-      border: 1px solid rgba(212, 175, 55, 0.2);
-      font-size: 1rem;
-      line-height: 1.7;
-      color: var(--color-parchment);
-      text-align: center;
-    }
-
-    /* Slide 10: The Last Claimant (The Coronation Reveal) */
-    .coronation-wrapper {
-      max-width: 950px;
-      margin: 0 auto;
-      text-align: center;
+    /* ==========================================================================
+       SLIDE 09 — THE CONSEQUENCES (גורל הממלכה — לוח מחוונים עגול)
+       ========================================================================== */
+    .consequences-visual-stage {
+      max-width: 1040px;
       width: 100%;
+      background: rgba(14, 15, 22, 0.9);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .archetype-reveal-card {
-      background: linear-gradient(180deg, rgba(212, 175, 55, 0.15) 0%, rgba(18, 19, 26, 0.95) 100%);
+    .gauges-trio-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      gap: 20px;
+      margin: 16px 0;
+    }
+
+    .radial-gauge-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .gauge-svg-circle {
+      width: 130px;
+      height: 130px;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg-ring {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 9;
+    }
+
+    .gauge-fill-ring {
+      fill: none;
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-dasharray: 339.29;
+      stroke-dashoffset: 339.29;
+      transition: stroke-dashoffset 1.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .gauge-center-text {
+      font-family: var(--font-mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      margin-top: -85px;
+      margin-bottom: 50px;
+    }
+
+    .realm-status-badge {
+      padding: 10px 24px;
+      background: rgba(7, 7, 10, 0.7);
+      border: 1px solid var(--color-aged-gold);
+      border-radius: 20px;
+      font-size: 0.95rem;
+      color: var(--color-aged-gold);
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    /* ==========================================================================
+       SLIDE 10 — THE CORONATION (ההכתרה המלכותית)
+       ========================================================================== */
+    .coronation-grand-stage {
+      max-width: 960px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .coronation-royal-card {
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.18) 0%, rgba(14, 15, 22, 0.96) 100%);
       border: 2px solid var(--color-aged-gold);
       border-radius: 16px;
-      padding: 36px 30px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 40px var(--color-gold-glow);
+      padding: 34px 28px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.9), 0 0 45px var(--color-gold-glow);
       position: relative;
     }
 
-    .archetype-title-hebrew {
+    .crown-art-svg {
+      width: 90px;
+      height: 90px;
+      margin-bottom: 12px;
+      fill: var(--color-aged-gold);
+      filter: drop-shadow(0 0 25px var(--color-gold-glow));
+      animation: crownShimmer 4s infinite ease-in-out;
+    }
+
+    @keyframes crownShimmer {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px var(--color-gold-glow)); }
+      50% { transform: scale(1.08); filter: drop-shadow(0 0 40px #FFF3A6); }
+    }
+
+    .coronation-archetype-title {
       font-family: var(--font-display);
-      font-size: 2.6rem;
+      font-size: 2.5rem;
       font-weight: 900;
       color: #fff;
       text-shadow: 0 4px 20px rgba(212, 175, 55, 0.6);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .archetype-title-latin {
+    .coronation-latin-title {
+      font-family: var(--font-royal);
       font-size: 1.05rem;
       color: var(--color-aged-gold);
-      font-family: var(--font-latin-royal);
       letter-spacing: 2px;
-      margin-bottom: 22px;
-    }
-
-    .epilogue-chronicle-text {
-      font-size: 1.15rem;
-      line-height: 1.8;
-      color: var(--color-parchment);
-      margin: 0 auto 30px;
-      max-width: 820px;
-      text-align: justify;
-      text-justify: inter-word;
-    }
-
-    .reset-claim-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 36px;
-      background: transparent;
-      border: 1px solid var(--color-aged-gold);
-      color: var(--color-aged-gold);
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all var(--trans-fast);
-    }
-
-    .reset-claim-btn:hover {
-      background: var(--color-aged-gold);
-      color: #08080C;
-      box-shadow: 0 0 25px var(--color-gold-glow);
+      margin-bottom: 20px;
     }
 
     /* Toast Notification */
     #gate-toast {
       position: fixed;
-      bottom: 90px;
+      bottom: 86px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: rgba(139, 0, 0, 0.92);
+      background: rgba(139, 0, 0, 0.94);
       border: 1px solid #FF5252;
       color: #fff;
-      padding: 12px 28px;
+      padding: 10px 24px;
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
       opacity: 0;
       pointer-events: none;
-      transition: all var(--trans-fast);
+      transition: all var(--trans-quick);
       z-index: 100;
     }
 
@@ -1230,28 +1162,27 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* Animations */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 900px) {
-      .map-showcase-container, .draconic-container, .winter-container, .battle-layout {
+    /* Responsive Design */
+    @media (max-width: 960px) {
+      .westeros-map-grid, .draconic-visual-stage, .winter-visual-stage, .battlefield-fronts-deck {
         grid-template-columns: 1fr;
       }
-      .houses-grid {
+      .traditional-nine-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .doctrines-tarot-deck {
         grid-template-columns: repeat(2, 1fr);
       }
-      .doctrines-grid {
-        grid-template-columns: 1fr;
-      }
-      .slide-title {
-        font-size: 2rem;
+      .slide-visual-title {
+        font-size: 1.9rem;
       }
       #app-header, #app-footer {
-        padding: 0 16px;
+        padding: 0 18px;
       }
       .keyboard-legend {
         display: none;
@@ -1261,7 +1192,7 @@
 </head>
 <body>
 
-  <!-- Fullscreen WebGL / 2D Canvas Background (PRD 11.1 & 16.2) -->
+  <!-- Fullscreen WebGL / Procedural Particle Canvas (Continuous 60 FPS) -->
   <canvas id="bg-canvas"></canvas>
   <div class="vignette-overlay"></div>
 
@@ -1272,13 +1203,13 @@
     <header id="app-header">
       <div id="progress-container"><div id="progress-bar"></div></div>
       
-      <div class="brand-group">
+      <div class="brand-group" onclick="PresentationEngine.goToSlide(1)">
         <svg class="brand-crest" viewBox="0 0 24 24">
           <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
         </svg>
         <div class="brand-text">
           <span class="brand-title">משחקי הכס — הטוען לכתר</span>
-          <span class="brand-sub"><bdi>Game of Thrones — The Last Claimant</bdi></span>
+          <span class="brand-sub"><bdi>The Last Claimant</bdi></span>
         </div>
       </div>
 
@@ -1288,299 +1219,383 @@
       </div>
     </header>
 
-    <!-- Slides Viewport Container (Exactly 10 Slides) -->
+    <!-- Slides Viewport Container (Exactly 10 Distinct Slides) -->
     <main id="slides-container">
 
       <!-- ======================================================================
-           SLIDE 01 — THE THRONE AWAITS (הכס ממתין)
+           SLIDE 01 — THE IRON THRONE (הכס ממתין)
            ====================================================================== -->
       <section class="slide active" id="slide-01" aria-hidden="false">
-        <div class="hero-content">
-          <svg class="throne-crown-icon" viewBox="0 0 24 24">
-            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+        <div class="throne-hero-stage">
+          <!-- Stylized Iron Throne Silhouette SVG -->
+          <svg class="iron-throne-art-svg" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFF3A6"/>
+                <stop offset="50%" stop-color="#D4AF37"/>
+                <stop offset="100%" stop-color="#5A4711"/>
+              </linearGradient>
+            </defs>
+            <path d="M50 8 L54 32 L62 14 L62 38 L72 20 L68 46 L82 30 L74 56 L88 48 L76 68 L50 64 L24 68 L12 48 L26 56 L18 30 L32 46 L28 20 L38 38 L38 14 L46 32 Z" fill="url(#bladeGrad)"/>
+            <path d="M26 64 L74 64 L80 92 L20 92 Z" fill="#1C1E2B" stroke="#D4AF37" stroke-width="2"/>
+            <path d="M36 68 L64 68 L68 90 L32 90 Z" fill="#111219" stroke="#9E9E9E" stroke-width="1.5"/>
+            <circle cx="50" cy="50" r="14" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="3,3"/>
           </svg>
-          <div class="slide-eyebrow"><bdi>The Iron Throne Awaits</bdi></div>
-          <h1 class="slide-title">הטוען האחרון לכתר</h1>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">משחקי הכס — מסע אינטראקטיבי בין אש לקרח אל כס הברזל</p>
-          <p class="slide-lead-text">
-            שבע הממלכות קרועות ומדממות. המלכים נפלו, השושלות נשחקו, וכס הברזל עומד שומם וממתין למי שיעז לתבוע אותו. האם דמך ראוי לכתר, או שמא גורלך להישרף באפר ההיסטוריה?
+
+          <div class="slide-eyebrow-tag"><bdi>The Iron Throne Awaits</bdi></div>
+          <h1 class="slide-visual-title">הטוען האחרון לכתר</h1>
+          <p class="slide-punchline">
+            שבע הממלכות קרועות. כס הברזל עומד שומם — האם דמך ראוי לכתר?
           </p>
 
-          <button class="hero-btn" id="btn-hero-start" onclick="PresentationEngine.nextSlide()">
-            <span>צעד קדימה ותבע את הכס</span>
+          <button class="throne-cta-btn" onclick="PresentationEngine.nextSlide()">
+            <span>תבע את הכס וצעד קדימה</span>
             <span>←</span>
           </button>
 
-          <div class="pillars-grid">
-            <div class="pillar-card">
-              <div class="pillar-title">אש מול קרח</div>
-              <div class="pillar-desc">מאבק אפי בין להבות הדרקונים לכפור שמעבר לחומה</div>
+          <div class="throne-visual-pillars">
+            <div class="throne-pillar-badge">
+              <span>🔥</span>
+              <span>אש ומורשת דרקונים</span>
             </div>
-            <div class="pillar-card">
-              <div class="pillar-title">הכרעות גורליות</div>
-              <div class="pillar-desc">שתי החלטות מנהיגות שיעצבו את גורל שבע הממלכות</div>
+            <div class="throne-pillar-badge">
+              <span>❄️</span>
+              <span>כפור ואימה מצפון</span>
             </div>
-            <div class="pillar-card">
-              <div class="pillar-title">הכתרה מותאמת</div>
-              <div class="pillar-desc">אחד מתוך 8 ארכיטיפים של שלטון הממתין בסוף הדרך</div>
+            <div class="throne-pillar-badge">
+              <span>👑</span>
+              <span>הכתרה מותאמת אישית</span>
             </div>
+          </div>
+
+          <!-- Optional Click-to-Reveal Lore -->
+          <button class="optional-details-trigger" onclick="PresentationEngine.toggleLore('drawer-s01')">
+            <span>📜</span>
+            <span>קרא את שבועת הדם המלכותית</span>
+          </button>
+          <div class="optional-lore-drawer" id="drawer-s01">
+            "המלכים נפלו, השושלות נשחקו, וכס הברזל עומד שומם וממתין למי שיעז לתבוע אותו. הגורל אינו שואל — הוא תובע. הכרז על שבועת הדם שלך."
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
-           SLIDE 02 — WELCOME TO WESTEROS (ברוכים הבאים לווסטרוז)
+           SLIDE 02 — WESTEROS MAP (מפת שבע הממלכות)
            ====================================================================== -->
       <section class="slide" id="slide-02" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>Realm of the Seven Kingdoms</bdi></div>
-          <h2 class="slide-title">ברוכים הבאים לווסטרוז</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">יבשת של חרבות, בגידות ושאיפות נצחיות</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>Tactical Realm Map</bdi></div>
+          <h2 class="slide-visual-title">מפת שבע הממלכות</h2>
+          <p class="slide-punchline">לוח השחמט של וסטרוז — לחץ על חבל ארץ לחשיפת מאזן הכוחות</p>
         </div>
 
-        <p class="slide-lead-text">
-          מפסגות הקרח הבלתי עבירות של הצפון ועד לחולות הלוהטים של דורן, שבע הממלכות הן לוח שחמט אכזרי. כל חבל ארץ נושא שבועות עתיקות, צלקות מלחמה ועוצמה פוליטית ייחודית. בחר מחוז כדי לחשוף את סודותיו:
-        </p>
+        <div class="westeros-map-grid">
+          <!-- Tactical Map SVG with interactive pins -->
+          <div class="tactical-map-canvas-frame">
+            <svg class="map-svg-board" viewBox="0 0 500 420">
+              <!-- Stylized Westeros Landmass Silhouette -->
+              <path d="M220 20 C280 20, 310 50, 300 90 C320 120, 290 150, 270 170 C280 200, 290 230, 260 270 C240 310, 280 340, 230 380 C190 390, 160 360, 150 320 C130 290, 150 250, 180 220 C160 190, 170 150, 200 120 C190 80, 190 40, 220 20 Z"
+                    fill="#151722" stroke="#D4AF37" stroke-width="1.8" filter="drop-shadow(0 0 12px rgba(212,175,55,0.25))"/>
+              
+              <!-- Mountain & Wall Lines -->
+              <line x1="190" y1="50" x2="310" y2="50" stroke="#00E5FF" stroke-width="3" stroke-dasharray="4,2"/>
+              <text x="250" y="44" fill="#00E5FF" font-size="10" font-family="Cinzel" text-anchor="middle">THE WALL</text>
 
-        <div class="map-showcase-container">
-          <div class="region-selector-list" id="region-btn-group">
-            <button class="region-item-btn active" onclick="PresentationEngine.selectRegion(0)">
-              <span>הצפון (<bdi>The North</bdi>)</span>
-              <span>❄️</span>
-            </button>
-            <button class="region-item-btn" onclick="PresentationEngine.selectRegion(1)">
-              <span>ארצות הנהר (<bdi>The Riverlands</bdi>)</span>
-              <span>🌊</span>
-            </button>
-            <button class="region-item-btn" onclick="PresentationEngine.selectRegion(2)">
-              <span>מישור המשגב (<bdi>The Reach</bdi>)</span>
-              <span>🌾</span>
-            </button>
-            <button class="region-item-btn" onclick="PresentationEngine.selectRegion(3)">
-              <span>דורן (<bdi>Dorne</bdi>)</span>
-              <span>☀️</span>
-            </button>
-            <button class="region-item-btn" onclick="PresentationEngine.selectRegion(4)">
-              <span>מעלה המלך (<bdi>King's Landing</bdi>)</span>
-              <span>👑</span>
-            </button>
+              <!-- Interactive Region Pins -->
+              <!-- The North -->
+              <g class="map-region-pin active" style="--pin-glow: #00E5FF;" onclick="PresentationEngine.selectRegion(0)">
+                <circle cx="245" cy="95" r="14" fill="#00E5FF" fill-opacity="0.25" stroke="#00E5FF" stroke-width="2"/>
+                <text x="245" y="99" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">❄️</text>
+                <text x="245" y="122" fill="#00E5FF" font-size="9" text-anchor="middle" font-weight="bold">הצפון</text>
+              </g>
+
+              <!-- The Riverlands -->
+              <g class="map-region-pin" style="--pin-glow: #29B6F6;" onclick="PresentationEngine.selectRegion(1)">
+                <circle cx="230" cy="190" r="12" fill="#29B6F6" fill-opacity="0.25" stroke="#29B6F6" stroke-width="2"/>
+                <text x="230" y="194" fill="#fff" font-size="10" text-anchor="middle">🌊</text>
+                <text x="230" y="214" fill="#29B6F6" font-size="9" text-anchor="middle" font-weight="bold">ארצות הנהר</text>
+              </g>
+
+              <!-- The Reach -->
+              <g class="map-region-pin" style="--pin-glow: #66BB6A;" onclick="PresentationEngine.selectRegion(2)">
+                <circle cx="190" cy="275" r="12" fill="#66BB6A" fill-opacity="0.25" stroke="#66BB6A" stroke-width="2"/>
+                <text x="190" y="279" fill="#fff" font-size="10" text-anchor="middle">🌾</text>
+                <text x="190" y="299" fill="#66BB6A" font-size="9" text-anchor="middle" font-weight="bold">המשגב</text>
+              </g>
+
+              <!-- Dorne -->
+              <g class="map-region-pin" style="--pin-glow: #FFA726;" onclick="PresentationEngine.selectRegion(3)">
+                <circle cx="215" cy="355" r="12" fill="#FFA726" fill-opacity="0.25" stroke="#FFA726" stroke-width="2"/>
+                <text x="215" y="359" fill="#fff" font-size="10" text-anchor="middle">☀️</text>
+                <text x="215" y="379" fill="#FFA726" font-size="9" text-anchor="middle" font-weight="bold">דורן</text>
+              </g>
+
+              <!-- King's Landing -->
+              <g class="map-region-pin" style="--pin-glow: #D4AF37;" onclick="PresentationEngine.selectRegion(4)">
+                <circle cx="270" cy="235" r="14" fill="#D4AF37" fill-opacity="0.3" stroke="#D4AF37" stroke-width="2"/>
+                <text x="270" y="239" fill="#fff" font-size="11" text-anchor="middle">👑</text>
+                <text x="270" y="260" fill="#D4AF37" font-size="9" text-anchor="middle" font-weight="bold">מעלה המלך</text>
+              </g>
+            </svg>
           </div>
 
-          <div class="region-details-card" id="region-card-display">
+          <!-- Region Dynamic Card -->
+          <div class="region-visual-card" id="region-card-display">
             <div>
-              <span class="region-badge" id="reg-badge">חבל ארץ 01 // הצפון</span>
-              <h3 class="region-title" id="reg-title">הצפון הגדול — ווינטרפל</h3>
-              <p class="region-lore" id="reg-lore">
-                המרחב הגדול ביותר בווסטרוז, עטוף בכפור עתיק ויערות סודיים. אנשי הצפון אינם שוכחים שבועות עתיקות, וכבודם קודם לכל תכסיס פוליטי. כאן עומדת משפחת סטארק כחומה בצורה מול אימי החורף.
+              <svg class="region-banner-sigil" id="reg-sigil-icon" viewBox="0 0 24 24">
+                <path d="M12 2L4 7v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V7l-8-5z"/>
+              </svg>
+              <div style="font-size: 0.78rem; color: var(--color-aged-gold); font-family: var(--font-royal);" id="reg-badge">
+                חבל ארץ // הצפון
+              </div>
+              <h3 style="font-family: var(--font-display); font-size: 1.6rem; color: #fff; margin: 6px 0;" id="reg-title">
+                הצפון הגדול — ווינטרפל
+              </h3>
+              <p style="font-size: 0.95rem; color: var(--color-parchment); line-height: 1.6;" id="reg-lore">
+                המרחב הגדול ביותר בווסטרוז, עטוף בכפור עתיק ויערות סודיים. אנשי הצפון אינם שוכחים שבועות עתיקות.
               </p>
             </div>
-            <div class="region-tactical-stats">
-              <div class="tac-stat">
-                <div class="tac-label">כוח צבאי משוער</div>
-                <div class="tac-val" id="reg-stat-army">45,000 חרבות</div>
+
+            <div class="region-army-meter">
+              <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+                <span>כוח צבאי משוער:</span>
+                <span class="num-isolated" id="reg-stat-army">45,000 חרבות</span>
               </div>
-              <div class="tac-stat">
-                <div class="tac-label">משאב מרכזי</div>
-                <div class="tac-val" id="reg-stat-res">עץ ברזל ופרוות</div>
-              </div>
-              <div class="tac-stat">
-                <div class="tac-label">אקלים אסטרטגי</div>
-                <div class="tac-val" id="reg-stat-env">חורף נצחי</div>
-              </div>
+              <div class="army-meter-bar" id="reg-meter-fill" style="width: 70%;"></div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
-           SLIDE 03 — THE GREAT HOUSES & ORDERS (הבתים והסיעות הגדולות)
+           SLIDE 03 — THE GREAT HOUSES & ORDERS (9 בתי האב + משמר הלילה)
+           Visual Heraldic Gallery
            ====================================================================== -->
       <section class="slide" id="slide-03" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>Lords, Dynasties & Oaths</bdi></div>
-          <h2 class="slide-title">הבתים והסיעות הגדולות</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">הכוחות הראשיים המתמודדים על הגמוניה, שבועותיהם וערכי היסוד שלהם</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>Nine Great Houses & The Order</bdi></div>
+          <h2 class="slide-visual-title">הבתים הגדולים ומסדר המשמר</h2>
+          <p class="slide-punchline">תשע שושלות אצולה ומסדר עצמאי אחד — בחר סמל לחשיפת שבועת הדם</p>
         </div>
 
-        <div class="houses-grid">
-          <!-- Stark -->
-          <div class="house-card" style="--house-color: #00E5FF; --house-glow: rgba(0, 229, 255, 0.4);" onclick="PresentationEngine.highlightHouse(this)">
-            <svg class="house-sigil-icon" viewBox="0 0 24 24"><path d="M12 2L4 7v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V7l-8-5zm0 4a3 3 0 110 6 3 3 0 010-6z"/></svg>
-            <h3 class="house-name">בית סטארק</h3>
-            <div class="house-latin-name"><bdi>House Stark</bdi></div>
-            <div class="house-motto">"החורף מתקרב"</div>
-            <p class="house-desc">חוסן נפשי, כבוד שאינו מתפשר ונאמנות לשבועות עתיקות. שליטי הצפון אינם מתפתים לתככי החצר הדרומיים.</p>
+        <div class="houses-grand-gallery">
+          <!-- 9 Traditional Great Houses Grid -->
+          <div class="traditional-nine-grid">
+            <!-- 1. Stark -->
+            <div class="heraldic-shield-item active" style="--h-color: #00E5FF; --h-glow: rgba(0,229,255,0.4);" onclick="PresentationEngine.spotlightHouse('stark', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M12 2L4 7v6c0 5.5 3.8 10.7 8 12 4.2-1.3 8-6.5 8-12V7l-8-5zm0 4a3 3 0 110 6 3 3 0 010-6z"/></svg>
+              <div class="shield-house-name">סטארק</div>
+              <div class="shield-house-seat">ווינטרפל</div>
+            </div>
+
+            <!-- 2. Targaryen -->
+            <div class="heraldic-shield-item" style="--h-color: #FF5722; --h-glow: rgba(255,87,34,0.4);" onclick="PresentationEngine.spotlightHouse('targaryen', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.7 2 7 5 8.7V17c-1.8-1.3-3-3.5-3-6 0-4.4 3.6-8 8-8s8 3.6 8 8c0 2.5-1.2 4.7-3 6v3.7c3-1.7 5-5 5-8.7 0-5.5-4.5-10-10-10z"/></svg>
+              <div class="shield-house-name">טארגאריין</div>
+              <div class="shield-house-seat">דרגונסטון</div>
+            </div>
+
+            <!-- 3. Lannister -->
+            <div class="heraldic-shield-item" style="--h-color: #D4AF37; --h-glow: rgba(212,175,55,0.4);" onclick="PresentationEngine.spotlightHouse('lannister', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>
+              <div class="shield-house-name">לאניסטר</div>
+              <div class="shield-house-seat">צוק קאסטרלי</div>
+            </div>
+
+            <!-- 4. Baratheon -->
+            <div class="heraldic-shield-item" style="--h-color: #FBC02D; --h-glow: rgba(251,192,45,0.4);" onclick="PresentationEngine.spotlightHouse('baratheon', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M19 10l-3-4-2 3-2-5-2 5-2-3-3 4v6c0 3.3 2.7 6 6 6s6-2.7 6-6v-6z"/></svg>
+              <div class="shield-house-name">באראתיאון</div>
+              <div class="shield-house-seat">קץ-סופה</div>
+            </div>
+
+            <!-- 5. Greyjoy -->
+            <div class="heraldic-shield-item" style="--h-color: #FFB300; --h-glow: rgba(255,179,0,0.4);" onclick="PresentationEngine.spotlightHouse('greyjoy', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M12 3c-4 0-7 3-7 7 0 5 4 8 7 11 3-3 7-6 7-11 0-4-3-7-7-7zm0 5c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z"/></svg>
+              <div class="shield-house-name">גרייג'וי</div>
+              <div class="shield-house-seat">פייק</div>
+            </div>
+
+            <!-- 6. Tyrell -->
+            <div class="heraldic-shield-item" style="--h-color: #4CAF50; --h-glow: rgba(76,175,80,0.4);" onclick="PresentationEngine.spotlightHouse('tyrell', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 6a6 6 0 00-6 6c0 3.3 2.7 6 6 6s6-2.7 6-6a6 6 0 00-6-6z"/></svg>
+              <div class="shield-house-name">טיירל</div>
+              <div class="shield-house-seat">רמות גן</div>
+            </div>
+
+            <!-- 7. Martell -->
+            <div class="heraldic-shield-item" style="--h-color: #E64A19; --h-glow: rgba(230,74,25,0.4);" onclick="PresentationEngine.spotlightHouse('martell', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4m-3.5-6.5l-2.8 2.8m-7.4 7.4l-2.8 2.8m0-13l2.8 2.8m7.4 7.4l2.8 2.8"/></svg>
+              <div class="shield-house-name">מארטל</div>
+              <div class="shield-house-seat">סאנספיר</div>
+            </div>
+
+            <!-- 8. Tully -->
+            <div class="heraldic-shield-item" style="--h-color: #0288D1; --h-glow: rgba(2,136,209,0.4);" onclick="PresentationEngine.spotlightHouse('tully', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M12 4C7 4 3 8 3 12s4 8 9 8 9-4 9-8-4-8-9-8zm0 12c-2.2 0-4-1.8-4-4s1.8-4 4-4 4 1.8 4 4-1.8 4-4 4z"/></svg>
+              <div class="shield-house-name">טאלי</div>
+              <div class="shield-house-seat">נהרן</div>
+            </div>
+
+            <!-- 9. Arryn -->
+            <div class="heraldic-shield-item" style="--h-color: #81D4FA; --h-glow: rgba(129,212,250,0.4);" onclick="PresentationEngine.spotlightHouse('arryn', this)">
+              <svg class="shield-svg-sigil" viewBox="0 0 24 24"><path d="M12 3l4 6-4 4-4-4 4-6zm-6 9l4 4-4 5-2-4 2-5zm12 0l2 5-2 4-4-5 4-4z"/></svg>
+              <div class="shield-house-name">ארין</div>
+              <div class="shield-house-seat">קן הנשרים</div>
+            </div>
           </div>
 
-          <!-- Targaryen -->
-          <div class="house-card" style="--house-color: #FF5722; --house-glow: rgba(255, 87, 34, 0.4);" onclick="PresentationEngine.highlightHouse(this)">
-            <svg class="house-sigil-icon" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.7 2 7 5 8.7V17c-1.8-1.3-3-3.5-3-6 0-4.4 3.6-8 8-8s8 3.6 8 8c0 2.5-1.2 4.7-3 6v3.7c3-1.7 5-5 5-8.7 0-5.5-4.5-10-10-10z"/></svg>
-            <h3 class="house-name">בית טארגאריין</h3>
-            <div class="house-latin-name"><bdi>House Targaryen</bdi></div>
-            <div class="house-motto">"אש ודם"</div>
-            <p class="house-desc">דם הדרקונים ומורשת ואליריה העתיקה. כוח צבאי מוחץ המסוגל להשמיד צבאות שלמים בסערת להבות.</p>
+          <!-- Independent Order: Night's Watch -->
+          <div class="nights-watch-pedestal" onclick="PresentationEngine.spotlightHouse('watch', this)">
+            <div class="pedestal-left">
+              <svg class="pedestal-crow-icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+              <div>
+                <strong style="font-family: var(--font-display); font-size: 1.05rem; color: #fff;">מסדר משמר הלילה (<bdi>The Night's Watch</bdi>)</strong>
+                <div style="font-size: 0.78rem; color: var(--color-valyrian-steel);">מסדר ריבוני עצמאי // טירת שחור // שבועת נצח על החומה</div>
+              </div>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 0.9rem; color: var(--color-aged-gold); font-style: italic;">
+              "המגן על ממלכות האדם"
+            </div>
           </div>
 
-          <!-- Lannister -->
-          <div class="house-card" style="--house-color: #D4AF37; --house-glow: rgba(212, 175, 55, 0.4);" onclick="PresentationEngine.highlightHouse(this)">
-            <svg class="house-sigil-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z"/></svg>
-            <h3 class="house-name">בית לאניסטר</h3>
-            <div class="house-latin-name"><bdi>House Lannister</bdi></div>
-            <div class="house-motto">"שמעו את שאגתי!"</div>
-            <p class="house-desc">עושר בלתי נדלה ממכרות צוק קאסטרלי, עורמה פוליטית חדה וההבטחה ששום חוב לעולם אינו נשכח.</p>
-          </div>
-
-          <!-- Night's Watch -->
-          <div class="house-card" style="--house-color: #9E9E9E; --house-glow: rgba(158, 158, 158, 0.4);" onclick="PresentationEngine.highlightHouse(this)">
-            <svg class="house-sigil-icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
-            <h3 class="house-name">משמר הלילה</h3>
-            <div class="house-latin-name"><bdi>The Night's Watch</bdi></div>
-            <div class="house-motto">"המגן על ממלכות האדם"</div>
-            <p class="house-desc">אחווה נטולת פניות של שבועת נצח. עומדים על גבי 700 רגל של קרח כמחסום אחרון בין האנושות לעלטה.</p>
+          <!-- Active House Spotlight Card -->
+          <div class="house-spotlight-box" id="house-spotlight-display">
+            <div>
+              <span id="spot-house-motto" style="font-family: var(--font-display); font-size: 1.15rem; color: var(--color-aged-gold); font-weight: 700;">
+                "החורף מתקרב" (<bdi>Winter Is Coming</bdi>)
+              </span>
+              <span id="spot-house-desc" style="font-size: 0.85rem; color: var(--color-parchment-muted); margin-inline-start: 12px;">
+                כבוד, חוסן נפשי ונאמנות לשבועות הצפון.
+              </span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--color-valyrian-steel); font-family: var(--font-royal);">
+              סמל אבות קנוני
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
            SLIDE 04 — FIRE AND BLOOD (אש ודם)
+           Draconic Experience with Flame Dial
            ====================================================================== -->
       <section class="slide" id="slide-04" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>House Targaryen & Draconic Might</bdi></div>
-          <h2 class="slide-title">אש ודם — עוצמת הדרקונים</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">כוח עליון המשנה את חוקי המשחק בווסטרוז</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>House Targaryen & Draconic Fury</bdi></div>
+          <h2 class="slide-visual-title">אש ודם — עוצמת הדרקונים</h2>
+          <p class="slide-punchline">"אש אינה מבחינה בין צדיק לרשע; היא רק דורשת לבעור."</p>
         </div>
 
-        <div class="draconic-container">
-          <div>
-            <p class="slide-lead-text" style="text-align: right; margin-bottom: 16px;">
-              הדרקונים אינם סתם חיות מלחמה — הם כוח טבע חי ונושם. מי שמחזיק בלהבות מחזיק ביכולת להכניע ממלכות שלמות ברגע אחד, אך אש שאינה נשלטת מכלה גם את האוחז בה.
-            </p>
-            <div class="dragon-quote-box">
-              "אש אינה מבחינה בין צדיק לרשע; היא רק דורשת לבעור."
+        <div class="draconic-visual-stage">
+          <!-- Dragon Art Stage -->
+          <div class="dragon-silhouette-card">
+            <svg class="dragon-svg-beast" viewBox="0 0 100 100">
+              <path d="M50 15 C35 15, 20 25, 10 40 C25 35, 40 45, 45 60 C30 65, 20 80, 25 90 C38 82, 45 75, 50 68 C55 75, 62 82, 75 90 C80 80, 70 65, 55 60 C60 45, 75 35, 90 40 C80 25, 65 15, 50 15 Z"/>
+              <circle cx="43" cy="30" r="3" fill="#FFF3A6"/>
+              <circle cx="57" cy="30" r="3" fill="#FFF3A6"/>
+            </svg>
+            <div style="font-family: var(--font-royal); font-size: 0.85rem; color: var(--color-dragonfire); letter-spacing: 2px;">
+              <bdi>BALERION // DROGON // DRACARYS</bdi>
             </div>
-            <p style="font-size: 0.95rem; color: var(--color-valyrian-steel); line-height: 1.6;">
-              מול אש הדרקון, ביצורי אבן ניתכים לפלדה מותכת וחומות מאבדות את משמעותן. האם תשתמש באש ככלי להשלטת שלום צודק, או שמא כמכשיר של טרור מוחלט?
-            </p>
           </div>
 
-          <div class="flame-control-panel">
-            <span style="font-family: var(--font-latin-royal); font-size: 0.85rem; color: var(--color-dragonfire); letter-spacing: 1px;">
-              מד עצימות להבת הדרקון
-            </span>
-            <div class="flame-gauge-display" id="flame-intensity-val">65%</div>
-            <input type="range" min="20" max="100" value="65" class="flame-slider" id="flame-slider" oninput="PresentationEngine.updateFlame(this.value)">
-            <p style="font-size: 0.8rem; color: var(--color-valyrian-steel); margin-top: 12px;">
-              הזז את המחוון כדי להגביר את זרם הניצוצות והטמפרטורה
-            </p>
+          <!-- Interactive Flame Dial -->
+          <div class="flame-dial-control">
+            <div style="font-size: 0.85rem; color: var(--color-valyrian-steel);">מחוון להבת הדרקון (<bdi>Dracarys Crucible</bdi>)</div>
+            <div style="font-family: var(--font-royal); font-size: 2.5rem; color: var(--color-dragonfire); font-weight: 900; margin: 10px 0;" id="flame-readout">
+              65%
+            </div>
+            <input type="range" min="20" max="100" value="65" style="width: 100%; accent-color: var(--color-dragonfire);" oninput="PresentationEngine.updateFlame(this.value)">
+
+            <div class="draconic-crystals-row">
+              <button class="draconic-crystal" onclick="PresentationEngine.updateFlame(30)">🔥 ניצוץ שקט</button>
+              <button class="draconic-crystal" onclick="PresentationEngine.updateFlame(70)">⚡ להבת קרב</button>
+              <button class="draconic-crystal" onclick="PresentationEngine.updateFlame(100)">💥 דרקאריס מוחלט</button>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
            SLIDE 05 — WINTER IS COMING (החורף מתקרב)
+           The 700-foot Wall Experience
            ====================================================================== -->
       <section class="slide" id="slide-05" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>The Wall & The Ancient Cold</bdi></div>
-          <h2 class="slide-title">החורף מתקרב — החשכה שמעבר לחומה</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">כשחצות היום קופאת, שום כתר לא יחמם את הדם</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>The Wall & The Ancient Cold</bdi></div>
+          <h2 class="slide-visual-title">החורף מתקרב — מעבר לחומה</h2>
+          <p class="slide-punchline">"כשחצות היום קופאת, שום כתר לא יחמם את הדם."</p>
         </div>
 
-        <div class="winter-container">
-          <div class="wall-stats-card">
-            <span style="font-family: var(--font-latin-royal); font-size: 0.85rem; color: var(--color-glacial-blue);">
-              מבצר הקרח הנצחי // החומה
-            </span>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0;">
-              <div>
-                <div style="font-size: 0.75rem; color: var(--color-valyrian-steel);">גובה החומה</div>
-                <div style="font-family: var(--font-display); font-size: 1.3rem; color: var(--color-glacial-blue);">700 רגל קרח</div>
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; color: var(--color-valyrian-steel);">אורך הביצור</div>
-                <div style="font-family: var(--font-display); font-size: 1.3rem; color: var(--color-glacial-blue);">300 מייל</div>
-              </div>
+        <div class="winter-visual-stage">
+          <!-- Monolith Ice Art -->
+          <div class="ice-wall-monolith">
+            <div style="font-family: var(--font-royal); font-size: 0.8rem; color: var(--color-glacial-blue);">
+              700 רגל קרח // 300 מייל שמירה // 8,000 שנה
             </div>
-            <button class="blizzard-toggle-btn" id="btn-blizzard-toggle" onclick="PresentationEngine.toggleBlizzard()">
-              ❄️ הבט אל תוך סופת הקרח
-            </button>
-            <div class="runes-revealed" id="runes-box">
-              רונות עתיקות זוהרות בקרח: "הלילה מתארך והמתים מביאים עימם את הסערה. מי שנלחם על כס של ברזל ימצא רק קבר של שלג."
+            
+            <div class="white-walker-eyes">
+              <div class="walker-eye"></div>
+              <div class="walker-eye"></div>
+            </div>
+
+            <div style="font-size: 0.88rem; color: #b3f5ff; text-align: center; margin-top: 8px;">
+              מבט מתוך סערת הצפון — אימה מתעוררת בשממות הקרח
             </div>
           </div>
 
-          <div>
-            <p class="slide-lead-text" style="text-align: right; margin-bottom: 16px;">
-              בזמן שלורדים נלחמים על כס מברזל, אימה עתיקה מתעוררת בשממות הקרח. החומה העצומה של שבע מאות רגל קרח ניצבת כמחסום אחרון בין החיים לבין צבא המתים. נגד סערת החורף, תככים פוליטיים חסרי ערך.
-            </p>
-            <div class="frost-quote-box">
-              "הרוח נושאת לחישות של אלה שלעולם אינם ישנים."
+          <!-- Interactive Frost Wipe -->
+          <div style="background: rgba(14, 15, 22, 0.88); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 12px; padding: 24px; text-align: center;">
+            <div style="font-size: 0.95rem; color: var(--color-parchment); margin-bottom: 14px;">
+              השמירה על גבולות האדם אינה יודעת שוחד או פוליטיקה.
+            </div>
+            
+            <button class="wipe-frost-interactive" id="btn-wipe-frost" onclick="PresentationEngine.toggleFrost()">
+              ❄️ נגב את שכבת הכפור וחשוף רונות קפואות
+            </button>
+
+            <div class="optional-lore-drawer" id="frost-runes-drawer" style="margin-top: 14px; border-color: var(--color-glacial-blue);">
+              "הלילה מתארך והמתים צועדים. מי שנלחם על כס של ברזל ימצא רק קבר של שלג. רק חרב הפלדה הואליריאנית ואש הדרקון יגנו על החיים."
             </div>
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
-           SLIDE 06 — CHOOSE YOUR ALLEGIANCE [DECISION 1]
+           SLIDE 06 — CHOOSE YOUR ALLIES [DECISION 1 QUIZ]
            ====================================================================== -->
       <section class="slide" id="slide-06" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>Decision Checkpoint 01</bdi></div>
-          <h2 class="slide-title">מבחן הדם והכבוד — בחר את נאמנותך</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">ההחלטה הראשונה: ענה על 3 שאלות נאמנות שיקבעו את הבית שילווה את תביעתך</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>First Royal Decision</bdi></div>
+          <h2 class="slide-visual-title">מבחן הנאמנות — בחר בני ברית</h2>
+          <p class="slide-punchline">3 שאלות שיקבעו את הבית שילווה את תביעתך לכס הברזל</p>
         </div>
 
-        <div class="quiz-card-container">
-          <div class="quiz-steps-header">
-            <div class="quiz-step-indicator" id="quiz-step-title">שאלה 1 מתוך 3: משבר המצור</div>
-            <div style="font-size: 0.85rem; color: var(--color-valyrian-steel);" id="quiz-progress-text">התקדמות: 33%</div>
+        <div class="quiz-interactive-deck">
+          <div class="quiz-progress-stepper">
+            <span id="quiz-step-title" style="font-family: var(--font-display); font-size: 1.1rem; color: var(--color-aged-gold); font-weight: 700;">
+              שאלה 1 מתוך 3: משבר המצור
+            </span>
+            <span id="quiz-progress-label" style="font-size: 0.82rem; color: var(--color-valyrian-steel); font-family: var(--font-mono);">
+              שלב 1/3
+            </span>
           </div>
 
-          <div class="quiz-question-title" id="quiz-question-text">
+          <div style="font-size: 1.15rem; color: #fff; margin-bottom: 16px; font-weight: 600;" id="quiz-question-prompt">
             האויב צר על חומותיך בעוד אנשיך רעבים. כיצד תפעל?
           </div>
 
-          <div class="quiz-options-list" id="quiz-options-container">
-            <!-- Rendered by JS -->
+          <div class="quiz-options-visual-grid" id="quiz-options-container">
+            <!-- Dynamically populated -->
           </div>
 
-          <div class="quiz-result-banner" id="quiz-result-banner">
-            <div style="font-family: var(--font-display); font-size: 1.25rem; color: var(--color-aged-gold); margin-bottom: 4px;">
-              בריתך נקבעה: <span id="quiz-winning-house-name">בית סטארק</span>
+          <div class="quiz-locked-result-bar" id="quiz-locked-result">
+            <div style="font-family: var(--font-display); font-size: 1.2rem; color: var(--color-aged-gold);">
+              בריתך נחרתה: <span id="quiz-winner-name">בית סטארק</span>
             </div>
-            <div style="font-size: 0.9rem; color: var(--color-parchment);">
-              שבועתך נרשמה בספר המלכות. המשך לשקופית הבאה לקראת המלחמה הגדולה!
+            <div style="font-size: 0.85rem; color: var(--color-parchment-muted);">
+              המשך לשקופית הבאה — בריתך מובילה את החזית במלחמה הגדולה!
             </div>
           </div>
         </div>
@@ -1588,201 +1603,223 @@
 
       <!-- ======================================================================
            SLIDE 07 — THE GREAT WAR (המלחמה הגדולה)
+           Dynamic reaction to the claimant's selected ally
            ====================================================================== -->
       <section class="slide" id="slide-07" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>The Clash of Fire and Ice</bdi></div>
-          <h2 class="slide-title">המלחמה הגדולה — התנגשות האש והקרח</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">כשעולמות מתנגשים, רק החזקים והנחושים ביותר ישרדו</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>The Clash of Fire and Ice</bdi></div>
+          <h2 class="slide-visual-title">המלחמה הגדולה — התנגשות האש והקרח</h2>
+          <p class="slide-punchline">כשעולמות מתנגשים, רק הברית הנכונה תטה את הכף</p>
         </div>
 
-        <p class="slide-lead-text">
-          המלחמה הגיעה לשערי הממלכה. צבאות מתנגשים בערפל של דם, שלג ואש דרקונים. בריתך שנבחרה עומדת כעת במבחן עליון. שום ניצחון אינו מגיע ללא מחיר כבד של הרס והקרבה. בחן את חזיתות הקרב:
-        </p>
-
-        <div class="battle-layout">
-          <div class="battle-sector-card active" onclick="PresentationEngine.selectBattleSector(0, this)">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: #fff;">חזית החומה והצפון</h3>
-              <span style="font-size: 0.8rem; color: var(--color-glacial-blue);">איום עליון</span>
+        <div class="battlefield-visual-stage">
+          <!-- Dynamic Faction Strike Banner -->
+          <div class="dynamic-faction-strike-banner" id="battle-faction-banner">
+            <div>
+              <div style="font-size: 0.78rem; color: var(--color-aged-gold); font-family: var(--font-royal);">כוח הברית הפעיל בחזית</div>
+              <h3 style="font-family: var(--font-display); font-size: 1.35rem; color: #fff;" id="battle-faction-title">
+                הסתערות בית סטארק — חומת מגן צפונית
+              </h3>
             </div>
-            <p style="font-size: 0.9rem; color: var(--color-parchment-muted); margin-top: 8px;">
-              הגנה נואשת מול גלי המתים. הקרח נסדק תחת עוצמת ההסתערות, ורק משמעת ברזל תמנע את קריסת הקו.
-            </p>
-            <div class="clash-meter-wrapper">
-              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
-                <span>עוצמת התנגשות</span>
-                <span class="num-isolated">92%</span>
-              </div>
-              <div class="clash-meter-bar"></div>
+            <div style="padding: 6px 14px; background: rgba(0, 229, 255, 0.15); border: 1px solid #00E5FF; border-radius: 20px; font-size: 0.82rem;" id="battle-faction-tag">
+              יתרון שדה קרב: +25% חוסן
             </div>
           </div>
 
-          <div class="battle-sector-card" onclick="PresentationEngine.selectBattleSector(1, this)">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <h3 style="font-family: var(--font-display); font-size: 1.25rem; color: #fff;">בקעת השריפה ושערי הבירה</h3>
-              <span style="font-size: 0.8rem; color: var(--color-dragonfire);">קרב אווירי</span>
-            </div>
-            <p style="font-size: 0.9rem; color: var(--color-parchment-muted); margin-top: 8px;">
-              להבות דרקון שוטפות את שדות הקרב. צבאות אויב הופכים לאפר בתוך שניות, אך העיר כולה מאוימת בחורבן.
-            </p>
-            <div class="clash-meter-wrapper">
-              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
-                <span>עוצמת להבות</span>
-                <span class="num-isolated">88%</span>
+          <!-- Dual Frontlines Deck -->
+          <div class="battlefield-fronts-deck">
+            <div class="battle-front-card active" onclick="PresentationEngine.switchFront(0, this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #fff; font-size: 1.1rem;">חזית החומה והצפון</strong>
+                <span style="font-size: 0.75rem; color: var(--color-glacial-blue);">איום קיומי</span>
               </div>
-              <div class="clash-meter-bar"></div>
+              <p style="font-size: 0.85rem; color: var(--color-parchment-muted); margin-top: 6px;">
+                בלימת גלי המתים בסופת קרח חסרת תקדים.
+              </p>
+              <div style="margin-top: 12px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                <div style="width: 88%; height: 100%; background: linear-gradient(90deg, #00E5FF, #2979FF);"></div>
+              </div>
+            </div>
+
+            <div class="battle-front-card" onclick="PresentationEngine.switchFront(1, this)">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #fff; font-size: 1.1rem;">שערי מעלה המלך</strong>
+                <span style="font-size: 0.75rem; color: var(--color-dragonfire);">קרב חומות</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--color-parchment-muted); margin-top: 6px;">
+                שריפת קווי מצור באוויר וביבשה.
+              </p>
+              <div style="margin-top: 12px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden;">
+                <div style="width: 82%; height: 100%; background: linear-gradient(90deg, #FF5722, #FF9100);"></div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
-           SLIDE 08 — THE FINAL DECISION [DECISION 2 DOCTRINE]
-           ====================================================================== -->
+           SLIDE 08 — THE FUTURE OF WESTEROS [DECISION 2 DOCTRINE CARDS]
+           Visual Tarot-style Cards
+           ========================================================================== -->
       <section class="slide" id="slide-08" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>Decision Checkpoint 02</bdi></div>
-          <h2 class="slide-title">ההכרעה הסופית — צו השלטון</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">איזה מנהיג תהיה כשהאפר ישקע? בחר את הפילוסופיה שתנחה את שלטונך:</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>Second Royal Decision</bdi></div>
+          <h2 class="slide-visual-title">צו השלטון — איזה מנהיג תהיה?</h2>
+          <p class="slide-punchline">בחר את הפילוסופיה שתנחה את שלטונך כשהאפר ישקע</p>
         </div>
 
-        <div class="doctrines-grid">
+        <div class="doctrines-tarot-deck">
           <!-- Iron Fist -->
-          <div class="doctrine-card" data-doctrine="iron_fist" onclick="PresentationEngine.selectDoctrine('iron_fist', this)">
-            <div class="doctrine-badge"><bdi>Doctrine 01 // Absolute Order</bdi></div>
-            <h3 class="doctrine-name">שליטה מוחלטת באש ובברזל</h3>
-            <p class="doctrine-desc">
-              דיכוי כל התנגדות, שלטון ריכוזי בלתי מתפשר, ופחד כערובה בלעדית לשלום ויציבות. המורדים ייענשו בחומרה, והממלכה תציית לקול אחד.
+          <div class="doctrine-tarot-card" data-doctrine="iron_fist" onclick="PresentationEngine.selectDoctrine('iron_fist', this)">
+            <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 4 2.5 7.5 6 9v-3c-1.5-.5-2.5-2-2.5-3.8 0-2.2 1.8-4 4-4h5V8l4 4-4 4v-2.2h-5c-1.2 0-2.2 1-2.2 2.2 0 1 .7 1.8 1.7 2.1V21c3.5-1.5 6-5 6-9 0-5.5-4.5-10-10-10z"/></svg>
+            <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה I</div>
+            <strong style="color: #fff; font-size: 1.1rem; margin: 6px 0;">אש וברזל</strong>
+            <p style="font-size: 0.8rem; color: var(--color-parchment-muted); line-height: 1.4;">
+              שלטון ריכוזי, דיכוי מרידות ומשמעת ברזל כערובה לשלום.
             </p>
+            <span class="royal-wax-seal">נבחר בצו</span>
           </div>
 
           <!-- Just Law -->
-          <div class="doctrine-card" data-doctrine="just_law" onclick="PresentationEngine.selectDoctrine('just_law', this)">
-            <div class="doctrine-badge"><bdi>Doctrine 02 // Realm Reform</bdi></div>
-            <h3 class="doctrine-name">צדק עיוור ורפורמה חוקתית</h3>
-            <p class="doctrine-desc">
-              פירוק מוקדי הכוח הישנים, שוויון מוחלט בפני החוק ומשפט הוגן לכל אזרח — מלורד רם-מעלה ועד אחרון האיכרים בשדות.
+          <div class="doctrine-tarot-card" data-doctrine="just_law" onclick="PresentationEngine.selectDoctrine('just_law', this)">
+            <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><path d="M12 3L2 8l10 5 10-5-10-5zm0 8.5L5.5 8 12 4.8 18.5 8 12 11.5zM4 11v6c0 3.3 3.6 6 8 6s8-2.7 8-6v-6l-8 4-8-4z"/></svg>
+            <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה II</div>
+            <strong style="color: #fff; font-size: 1.1rem; margin: 6px 0;">צדק ורפורמה</strong>
+            <p style="font-size: 0.8rem; color: var(--color-parchment-muted); line-height: 1.4;">
+              פירוק מוקדי כוח ישנים ומשפט הוגן לכל אזרח בממלכה.
             </p>
+            <span class="royal-wax-seal">נבחר בצו</span>
           </div>
 
           <!-- Vigilant Guard -->
-          <div class="doctrine-card" data-doctrine="guard" onclick="PresentationEngine.selectDoctrine('guard', this)">
-            <div class="doctrine-badge"><bdi>Doctrine 03 // Border Shield</bdi></div>
-            <h3 class="doctrine-name">הקרבה אישית והגנת הגבולות</h3>
-            <p class="doctrine-desc">
-              הפניית משאבי הממלכה כולה לביצור הגבולות, חיזוק החומה והכנה מתמדת לאיומים קיומיים מעבר לים ומן הצפון האפל.
+          <div class="doctrine-tarot-card" data-doctrine="guard" onclick="PresentationEngine.selectDoctrine('guard', this)">
+            <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.2l7 3.1v4.7c0 4.5-3 8.7-7 9.8-4-1.1-7-5.3-7-9.8V6.3l7-3.1z"/></svg>
+            <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה III</div>
+            <strong style="color: #fff; font-size: 1.1rem; margin: 6px 0;">מגן הגבולות</strong>
+            <p style="font-size: 0.8rem; color: var(--color-parchment-muted); line-height: 1.4;">
+              הפניית כלל משאבי הממלכה לביצור החומה מפני איומי חורף.
             </p>
+            <span class="royal-wax-seal">נבחר בצו</span>
           </div>
 
-          <!-- Pragmatic Commerce -->
-          <div class="doctrine-card" data-doctrine="commerce" onclick="PresentationEngine.selectDoctrine('commerce', this)">
-            <div class="doctrine-badge"><bdi>Doctrine 04 // Pragmatic Wealth</bdi></div>
-            <h3 class="doctrine-name">תחכום דיפלומטי ושגשוג כלכלי</h3>
-            <p class="doctrine-desc">
-              שיקום עורקי המסחר עם אסוס, בריתות כספיות ויצירת שלום בר-קיימא דרך תלות כלכלית הדדית, שגשוג וזהב.
+          <!-- Commerce -->
+          <div class="doctrine-tarot-card" data-doctrine="commerce" onclick="PresentationEngine.selectDoctrine('commerce', this)">
+            <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v10M9 9h6a2 2 0 010 4H9a2 2 0 000 4h6"/></svg>
+            <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה IV</div>
+            <strong style="color: #fff; font-size: 1.1rem; margin: 6px 0;">שגשוג ומסחר</strong>
+            <p style="font-size: 0.8rem; color: var(--color-parchment-muted); line-height: 1.4;">
+              פתיחת נתיבי סחר עם אסוס ויצירת שלום דרך תלות כלכלית.
             </p>
+            <span class="royal-wax-seal">נבחר בצו</span>
           </div>
         </div>
       </section>
 
       <!-- ======================================================================
-           SLIDE 09 — THE FATE OF THE REALM (גורל הממלכה)
+           SLIDE 09 — THE CONSEQUENCES (גורל הממלכה)
+           Circular Radial Indicators & Minimal Text
            ====================================================================== -->
       <section class="slide" id="slide-09" aria-hidden="true">
-        <div class="slide-heading-block">
-          <div class="slide-eyebrow"><bdi>Algorithmic Power Balance</bdi></div>
-          <h2 class="slide-title">גורל הממלכה — מאזן הכוחות</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle">ניתוח אלגוריתמי שקוף: כיצד שילוב הברית והפילוסופיה עיצב את עתיד שבע הממלכות</p>
+        <div class="slide-header-visual">
+          <div class="slide-eyebrow-tag"><bdi>Algorithmic Power Equilibrium</bdi></div>
+          <h2 class="slide-visual-title">גורל הממלכה — מאזן הכוחות</h2>
+          <p class="slide-punchline">ניתוח תוצאות הבחירות שלך באמצעות מדדי האסטרולאב של הסיטדל</p>
         </div>
 
-        <div class="metrics-dashboard">
-          <!-- Political Stability -->
-          <div class="metric-row">
-            <div class="metric-info">
-              <span>יציבות פוליטית (<bdi>Political Stability</bdi>)</span>
-              <span class="metric-value-text" id="metric-stability-val">0%</span>
+        <div class="consequences-visual-stage">
+          <!-- Trio Radial Indicators -->
+          <div class="gauges-trio-row">
+            <!-- Stability -->
+            <div class="radial-gauge-item">
+              <svg class="gauge-svg-circle" viewBox="0 0 120 120">
+                <circle class="gauge-bg-ring" cx="60" cy="60" r="54"/>
+                <circle class="gauge-fill-ring" id="ring-stability" cx="60" cy="60" r="54" stroke="#D4AF37"/>
+              </svg>
+              <div class="gauge-center-text" id="val-stability">0%</div>
+              <strong style="font-size: 0.95rem; color: var(--color-aged-gold);">יציבות פוליטית</strong>
             </div>
-            <div class="metric-bar-bg">
-              <div class="metric-bar-fill fill-stability" id="bar-stability"></div>
+
+            <!-- Prosperity -->
+            <div class="radial-gauge-item">
+              <svg class="gauge-svg-circle" viewBox="0 0 120 120">
+                <circle class="gauge-bg-ring" cx="60" cy="60" r="54"/>
+                <circle class="gauge-fill-ring" id="ring-prosperity" cx="60" cy="60" r="54" stroke="#4CAF50"/>
+              </svg>
+              <div class="gauge-center-text" id="val-prosperity">0%</div>
+              <strong style="font-size: 0.95rem; color: #81C784;">רווחת העם</strong>
+            </div>
+
+            <!-- Defense -->
+            <div class="radial-gauge-item">
+              <svg class="gauge-svg-circle" viewBox="0 0 120 120">
+                <circle class="gauge-bg-ring" cx="60" cy="60" r="54"/>
+                <circle class="gauge-fill-ring" id="ring-defense" cx="60" cy="60" r="54" stroke="#00E5FF"/>
+              </svg>
+              <div class="gauge-center-text" id="val-defense">0%</div>
+              <strong style="font-size: 0.95rem; color: var(--color-glacial-blue);">מוכנות להגנה</strong>
             </div>
           </div>
 
-          <!-- People's Prosperity -->
-          <div class="metric-row">
-            <div class="metric-info">
-              <span>רווחת העם והכלכלה (<bdi>People's Prosperity</bdi>)</span>
-              <span class="metric-value-text" id="metric-prosperity-val">0%</span>
-            </div>
-            <div class="metric-bar-bg">
-              <div class="metric-bar-fill fill-prosperity" id="bar-prosperity"></div>
-            </div>
+          <div class="realm-status-badge" id="realm-synergy-badge">
+            עידן חדש מתעורר בווסטרוז
           </div>
 
-          <!-- Defense Readiness -->
-          <div class="metric-row">
-            <div class="metric-info">
-              <span>מוכנות להגנה ואיומים (<bdi>Defense Readiness</bdi>)</span>
-              <span class="metric-value-text" id="metric-defense-val">0%</span>
-            </div>
-            <div class="metric-bar-bg">
-              <div class="metric-bar-fill fill-defense" id="bar-defense"></div>
-            </div>
+          <!-- Optional Click-to-Reveal Maester's Report -->
+          <button class="optional-details-trigger" onclick="PresentationEngine.toggleLore('drawer-s09')">
+            <span>📜</span>
+            <span>עיין בדוח המלומדים המלא של הסיטדל</span>
+          </button>
+          <div class="optional-lore-drawer" id="drawer-s09">
+            <p id="s09-synthesis-text">
+              שילוב בריתך עם הדוקטרינה הנבחרת יצר מערך כוחות ייחודי בוסטרוז.
+            </p>
           </div>
 
-          <div class="fate-synthesis-text" id="fate-synthesis-text">
-            מחשב את מאזן הכוחות המלכותי...
-          </div>
-
-          <div style="text-align: center; margin-top: 24px;">
-            <button class="hero-btn" onclick="PresentationEngine.nextSlide()" style="font-size: 1.1rem; padding: 12px 34px;">
-              <span>עבור לטקס ההכתרה הרשמי</span>
-              <span>←</span>
-            </button>
-          </div>
+          <button class="throne-cta-btn" onclick="PresentationEngine.nextSlide()" style="padding: 12px 36px; font-size: 1.1rem; margin-top: 20px;">
+            <span>התקדם להכתרה הרשמית</span>
+            <span>←</span>
+          </button>
         </div>
       </section>
 
       <!-- ======================================================================
-           SLIDE 10 — THE LAST CLAIMANT (הטוען האחרון — ההכתרה)
+           SLIDE 10 — THE CORONATION (ההכתרה המלכותית)
+           Personalized Archetype Climax
            ====================================================================== -->
       <section class="slide" id="slide-10" aria-hidden="true">
-        <div class="coronation-wrapper">
-          <div class="slide-eyebrow"><bdi>The Grand Coronation</bdi></div>
-          <h2 class="slide-title">הטוען האחרון — ההכתרה</h2>
-          <div class="ornament-divider">
-            <div class="ornament-line"></div>
-            <div class="ornament-gem"></div>
-            <div class="ornament-line"></div>
-          </div>
-          <p class="slide-subtitle" style="margin-bottom: 24px;">תואר המלכות שלך נחרת לעד בדפי ההיסטוריה של וסטרוז</p>
+        <div class="coronation-grand-stage">
+          <div class="slide-eyebrow-tag"><bdi>The Grand Coronation</bdi></div>
+          <h2 class="slide-visual-title" style="margin-bottom: 14px;">הטוען האחרון — ההכתרה</h2>
 
-          <div class="archetype-reveal-card">
-            <div class="archetype-title-hebrew" id="reveal-title-he">שליט הדרקונים הנצחי</div>
-            <div class="archetype-title-latin" id="reveal-title-en"><bdi>The Eternal Dragon Sovereign</bdi></div>
-            
-            <p class="epilogue-chronicle-text" id="reveal-epilogue-text">
-              שליטה מוחלטת בכוח האש. הממלכה מאוחדת תחת מורא כבד, מרידות מדוכאות באיבן, ושבע הממלכות חוות שלום של צייתנות מוחלטת. צללי הדרקונים בשמי מעלה המלך מזכירים לכל לורד את מחיר הבגידה.
+          <div class="coronation-royal-card">
+            <!-- Crown SVG Art -->
+            <svg class="crown-art-svg" viewBox="0 0 24 24">
+              <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+            </svg>
+
+            <h3 class="coronation-archetype-title" id="coronation-title-he">שליט הדרקונים הנצחי</h3>
+            <div class="coronation-latin-title" id="coronation-title-en"><bdi>The Eternal Dragon Sovereign</bdi></div>
+
+            <p style="font-size: 1.05rem; color: var(--color-parchment); max-width: 760px; margin: 0 auto 16px; line-height: 1.6;" id="coronation-summary-lead">
+              שלטונך נחרת לעד בדפי ההיסטוריה של שבע הממלכות.
             </p>
 
-            <button class="reset-claim-btn" onclick="PresentationEngine.resetClaim()">
-              <span>🔄 התחל מסע חדש</span>
+            <!-- Optional Click-to-Reveal Full Century Chronicle -->
+            <button class="optional-details-trigger" onclick="PresentationEngine.toggleLore('drawer-s10')">
+              <span>📜</span>
+              <span>קרא את כרוניקת מאה השנים הבאות</span>
             </button>
+            <div class="optional-lore-drawer" id="drawer-s10" style="margin: 14px auto 0;">
+              <p id="coronation-full-chronicle">
+                שליטה מוחלטת בכוח האש. הממלכה מאוחדת תחת מורא כבד, מרידות מדוכאות באיבן.
+              </p>
+            </div>
+
+            <div style="margin-top: 24px;">
+              <button class="nav-btn" onclick="PresentationEngine.resetClaim()">
+                <span>🔄 התחל מסע חדש</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -1795,7 +1832,7 @@
         <span><span class="key-badge">←</span> קדימה</span>
         <span><span class="key-badge">→</span> אחורה</span>
         <span><span class="key-badge">רווח</span> הבא</span>
-        <span><span class="key-badge">1-0</span> מעבר ישיר</span>
+        <span><span class="key-badge">1-0</span> מעבר מהיר</span>
       </div>
 
       <div class="nav-buttons-group">
@@ -1818,118 +1855,100 @@
   </div>
 
   <!-- ==========================================================================
-       SELF-CONTAINED APPLICATION LOGIC & DATA (PRD Section 9, 12, 13)
-       ========================================================================== -->
+       JAVASCRIPT APPLICATION ENGINE (PRD Section 7, 8, 9)
+       ========================================================================== */ -->
   <script>
     /* --- PYTHON_DATA_START --- */
-    // Canonical Lore, Quiz Questions and Archetype Matrix (PRD Section 7, 8, 12)
     const GAME_DATA = {
       houses: {
-        targaryen: {
-          nameHe: "בית טארגאריין",
-          nameEn: "House Targaryen",
-          mottoHe: "אש ודם",
-          color: "#FF5722",
-          theme: "dragonfire"
-        },
-        stark: {
-          nameHe: "בית סטארק",
-          nameEn: "House Stark",
-          mottoHe: "החורף מתקרב",
-          color: "#00E5FF",
-          theme: "ice"
-        },
-        lannister: {
-          nameHe: "בית לאניסטר",
-          nameEn: "House Lannister",
-          mottoHe: "שמעו את שאגתי!",
-          color: "#D4AF37",
-          theme: "gold"
-        },
-        watch: {
-          nameHe: "מסדר משמר הלילה",
-          nameEn: "The Order of the Night's Watch",
-          mottoHe: "המגן על ממלכות האדם",
-          color: "#9E9E9E",
-          theme: "shadow"
-        }
+        targaryen: { nameHe: "בית טארגאריין", mottoHe: "אש ודם", color: "#FF5722" },
+        stark:     { nameHe: "בית סטארק", mottoHe: "החורף מתקרב", color: "#00E5FF" },
+        lannister: { nameHe: "בית לאניסטר", mottoHe: "שמעו את שאגתי!", color: "#D4AF37" },
+        watch:     { nameHe: "משמר הלילה", mottoHe: "המגן על ממלכות האדם", color: "#9E9E9E" }
       },
       regions: [
         {
           nameHe: "הצפון הגדול — ווינטרפל",
-          nameEn: "The North",
-          badge: "חבל ארץ 01 // הצפון",
-          lore: "המרחב הגדול ביותר בווסטרוז, עטוף בכפור עתיק ויערות סודיים. אנשי הצפון אינם שוכחים שבועות עתיקות, וכבודם קודם לכל תכסיס פוליטי. כאן עומדת משפחת סטארק כחומה בצורה מול אימי החורף.",
+          badge: "חבל ארץ // הצפון",
+          lore: "המרחב הגדול ביותר בווסטרוז, עטוף בכפור עתיק ויערות סודיים. אנשי הצפון זוכרים שבועות.",
           army: "45,000 חרבות",
-          resource: "עץ ברזל ופרוות",
-          climate: "חורף נצחי"
+          pct: 70,
+          color: "#00E5FF"
         },
         {
           nameHe: "ארצות הנהר — נהרן",
-          nameEn: "The Riverlands",
-          badge: "חבל ארץ 02 // המרכז",
-          lore: "צומת הדרכים המדמם של שבע הממלכות, מרושת בנהרות אדירים וטירות מבוצרות. כאן התרחשו המלחמות העזות ביותר, ואנשי הנהר למדו שגמישות ובריתות חזקות הן המפתח להישרדות.",
+          badge: "חבל ארץ // המרכז האסטרטגי",
+          lore: "צומת הדרכים המבוצר של הממלכה, מרושת בנהרות אדירים וטירות מים.",
           army: "35,000 חרבות",
-          resource: "דגן ודגה עשירה",
-          climate: "אקלים מתון וגשום"
+          pct: 55,
+          color: "#29B6F6"
         },
         {
           nameHe: "מישור המשגב — רמות גן",
-          nameEn: "The Reach",
-          badge: "חבל ארץ 03 // הדרום-מערב",
-          lore: "אסם התבואה האגדי של וסטרוז ומרכז האבירות הנאצלת. שדות פוריים עצומים, עושר חקלאי וצי פרשים מפואר המעניקים לשליטיו כוח השפעה פוליטי ראשון במעלה.",
+          badge: "חבל ארץ // הדרום-מערב הפורה",
+          lore: "אסם התבואה של וסטרוז, עושר חקלאי וצי פרשים מפואר.",
           army: "70,000 פרשים",
-          resource: "תבואה, יין ופירות",
-          climate: "שמשי ומזמין"
+          pct: 95,
+          color: "#66BB6A"
         },
         {
           nameHe: "דורן — סאנספיר",
-          nameEn: "Dorne",
-          badge: "חבל ארץ 04 // הדרום הלוהט",
-          lore: "מדבריות חמים, הרים נישאים ותרבות רוינארית גאה. דורן מעולם לא נכבשה בחרב או באש דרקונים, ולוחמיה ידועים בטקטיקות גרילה נועזות ורעלים קטלניים.",
+          badge: "חבל ארץ // הדרום הלוהט",
+          lore: "מדבריות חמים ותרבות גאה שלא נכבשה מעולם בחרב.",
           army: "30,000 לוחמים",
-          resource: "תבלינים וארסי נחשים",
-          climate: "מדבר צחיח"
+          pct: 50,
+          color: "#FFA726"
         },
         {
           nameHe: "מעלה המלך — המבצר האדום",
-          nameEn: "King's Landing",
-          badge: "חבל ארץ 05 // בירת הממלכה",
-          lore: "לב הכוח הפוליטי והמושב של כס הברזל. כאן נלחשים סודות באפלולית, מרגלים קונים ומוכרים גורלות, ושליטים קמים ונופלים לפי גחמות של תככי החצר.",
+          badge: "חבל ארץ // בירת הממלכה",
+          lore: "לב הכוח הפוליטי וכס הברזל. כאן נקבעים גורלות שבע הממלכות.",
           army: "משמר העיר (6,000)",
-          resource: "מיסים ונמלי מסחר",
-          climate: "חופי וסואן"
+          pct: 40,
+          color: "#D4AF37"
         }
       ],
+      nineHouses: {
+        stark:     { motto: "החורף מתקרב", desc: "כבוד, חוסן ונאמנות לשבועות הצפון." },
+        targaryen: { motto: "אש ודם", desc: "עוצמה דרקונית מוחלטת ומורשת ואליריאנית." },
+        lannister: { motto: "שמעו את שאגתי!", desc: "עושר בלתי נדלה, עורמה פוליטית ותחכום." },
+        baratheon: { motto: "שלנו הוא הזעם", desc: "עוצמת שדה קרב סוחפת וזעם לוחמים." },
+        greyjoy:   { motto: "איננו זורעים", desc: "שליטי איי הברזל ועוצמה ימית פראית." },
+        tyrell:    { motto: "גדלים בעוצמה", desc: "אבירות מפוארת, שפע חקלאי ודיפלומטיה." },
+        martell:   { motto: "בלתי מורכן, בלתי מנוצח", desc: "גאוות מדבר עקשנית ולוחמת גרילה." },
+        tully:     { motto: "משפחה, חובה, כבוד", desc: "ביצורי מים ואסטרטגיית נהרות חכמה." },
+        arryn:     { motto: "גבוה ככבוד", desc: "מבצר קן הנשרים הבלתי חדיר בין העננים." },
+        watch:     { motto: "המגן על ממלכות האדם", desc: "שבועת נצח עצמאית על חומת הקרח." }
+      },
       quizQuestions: [
         {
           title: "שאלה 1 מתוך 3: משבר המצור",
-          prompt: "האויב צר על חומותיך בעוד אנשיך רעבים. כיצד תפעל?",
+          prompt: "האויב צר על חומותיך ואנשיך רעבים. כיצד תפעל?",
           options: [
-            { text: "שורף את קווי האספקה שלו באש חסרת רחמים.", faction: "targaryen" },
+            { text: "שורף את קווי האספקה שלו באש דרקון חסרת רחמים.", faction: "targaryen" },
             { text: "מוביל פשיטת לילה אמיצה ומגן על החלשים בגופי.", faction: "stark" },
-            { text: "משלם לצי שכירי חרב שיתקוף את עורפו של האויב.", faction: "lannister" },
+            { text: "משלם לשכירי חרב שיתקפו את עורף האויב בזהב.", faction: "lannister" },
             { text: "מחזיק מעמד בחומות ומקריב הכול למען המשמר.", faction: "watch" }
           ]
         },
         {
-          title: "שאלה 2 מתוך 3: צדק מול תועלת פוליטית",
-          prompt: "לורד רב-השפעה בגד בשבועת האמונים שלו, אך צבאו נחוץ למלחמה הקרבה. מה דינו?",
+          title: "שאלה 2 מתוך 3: צדק מול תועלת",
+          prompt: "לורד בעל צבא בגד בשבועה, אך חייליו נחוצים לקרב. מה דינו?",
           options: [
-            { text: "כורת את ראשו בו במקום; הדין והכבוד עומדים מעל לכל תועלת.", faction: "stark" },
-            { text: "מאיים עליו בדרקונים ומאלץ אותו להישבע מחדש בשבועת דם.", faction: "targaryen" },
-            { text: "מוחל לו תמורת מס זהב כבד ובני ערובה שיבטיחו את ציותו.", faction: "lannister" },
-            { text: "שולח אותו לגלות נצחית אל החומה, ללא תואר וללא אדמה.", faction: "watch" }
+            { text: "כורת את ראשו מיד; הכבוד והדין קודמים לכל תועלת.", faction: "stark" },
+            { text: "מאיים עליו בדרקונים ומאלץ אותו להישבע מחדש בדם.", faction: "targaryen" },
+            { text: "מוחל לו תמורת מס זהב כבד ובני ערובה להבטחת ציות.", faction: "lannister" },
+            { text: "שולח אותו לגלות נצחית אל החומה, ללא תואר ואדמה.", faction: "watch" }
           ]
         },
         {
           title: "שאלה 3 מתוך 3: ההקרבה העליונה",
-          prompt: "שמועות על אימה עתיקה מגיעות מן הצפון הקפוא. הממלכה מפולגת ועייפה. במה תשקיע את שארית כוחותיך?",
+          prompt: "אימה עתיקה מתעוררת בצפון הקפוא. במה תשקיע את כוחותיך?",
           options: [
-            { text: "מגייס את כל מסדרי הממלכה ומבצר את החומה; האיום הקיומי קודם לכל כתר.", faction: "watch" },
-            { text: "רותם את אש הדרקונים והידע הואליריאני להשמדת האויב העל-טבעי.", faction: "targaryen" },
-            { text: "מאחד את צבאות הצפון במסדר כבוד ומגן על עמי וסטרוז בחרב פלדה.", faction: "stark" },
-            { text: "מממן קווי אספקה ומבצרי אבן עורפיים; כסף ומשאבים מנצחים מלחמות.", faction: "lannister" }
+            { text: "מגייס את כל מסדרי הממלכה לביצור החומה; האיום קודם לכתר.", faction: "watch" },
+            { text: "רותם את אש הדרקונים להשמדת האויב העל-טבעי.", faction: "targaryen" },
+            { text: "מאחד את צבאות הצפון במסדר כבוד ומגן בחרב פלדה.", faction: "stark" },
+            { text: "מממן קווי אספקה ומבצרי אבן עורפיים בעזרת אוצר הממלכה.", faction: "lannister" }
           ]
         }
       ],
@@ -1937,101 +1956,95 @@
         "ARC-01": {
           titleHe: "שליט הדרקונים הנצחי",
           titleEn: "The Eternal Dragon Sovereign",
-          epilogueHe: "שליטה מוחלטת בכוח האש. הממלכה מאוחדת תחת מורא כבד, מרידות מדוכאות באיבן, ושבע הממלכות חוות שלום של צייתנות מוחלטת. צללי הדרקונים בשמי מעלה המלך מהווים תזכורת תמידית לכך ששום התקוממות לא תעבור ללא עונש צורב."
+          summary: "שלום של מורא מוחלט. שבע הממלכות מאוחדות תחת צל כנפי הדרקונים.",
+          chronicle: "שליטה מוחלטת בכוח האש. הממלכה מאוחדת תחת מורא כבד, מרידות מדוכאות באיבן, ושבע הממלכות חוות שלום של צייתנות מוחלטת. צללי הדרקונים בשמי מעלה המלך מהווים תזכורת תמידית לכך ששום התקוממות לא תעבור ללא עונש צורב."
         },
         "ARC-02": {
           titleHe: "המלך החוקק של הצפון",
           titleEn: "The Lawgiver of the North",
-          epilogueHe: "עידן של צדק, יושרה וסדר חוקתי חדש. חוקי הממלכה שווים לכל נפש, השחיתות נעקרת ממוסדות השלטון, ושמך נזכר לדורות כמגן החלשים וההוגן במלכי וסטרוז. תחת שלטונך, הכבוד והאמת הפכו לעמודי התווך של החברה."
+          summary: "עידן של צדק ויושרה שבו החוק שווה מאיכר ועד אחרון הלורדים.",
+          chronicle: "עידן של צדק, יושרה וסדר חוקתי חדש. חוקי הממלכה שווים לכל נפש, השחיתות נעקרת ממוסדות השלטון, ושמך נזכר לדורות כמגן החלשים וההוגן במלכי וסטרוז."
         },
         "ARC-03": {
           titleHe: "אדון הצללים והזהב",
           titleEn: "The Lord of Shadows and Gold",
-          epilogueHe: "כס הברזל הופך למרכז הפיננסי והמסחרי של העולם הידוע. בריתות נרכשות בזהב, אויבים מנוטרלים בחשאי עוד לפני שהניפו חרב, ושגשוג כלכלי חסר תקדים שוטף את ערי הנמל. הוכחת כי כוחו של המטבע גדול מכל חרב."
+          summary: "כס הברזל הופך למרכז הפיננסי של העולם הידוע.",
+          chronicle: "כס הברזל הופך למרכז הפיננסי והמסחרי של העולם הידוע. בריתות נרכשות בזהב, אויבים מנוטרלים בחשאי עוד לפני שהניפו חרב, ושגשוג כלכלי חסר תקדים שוטף את ערי הנמל."
         },
         "ARC-04": {
           titleHe: "מגן האנושות הנשגב",
           titleEn: "The Sovereign Shield of the Living",
-          epilogueHe: "כל עוצמת הממלכה מופנית להגנת החיים מפני החשכה. החומה מבוצרת במבצרי גרניט חדשים, משמר הלילה הופך לצבא העילית של הממלכה, והחשכה שמעבר לגבול נהדפת לתמיד. שלטונך ייזכר כעידן שבו האנושות ניצחה את הכליה."
+          summary: "כל עוצמת הממלכה מופנית לביצור החומה והדפת החשכה לתמיד.",
+          chronicle: "כל עוצמת הממלכה מופנית להגנת החיים מפני החשכה. החומה מבוצרת במבצרי גרניט חדשים, משמר הלילה הופך לצבא העילית של הממלכה, והחשכה שמעבר לגבול נהדפת לתמיד."
         },
         "ARC-05": {
           titleHe: "הבורר הצודק של שבע הממלכות",
           titleEn: "The Just Arbitrator",
-          epilogueHe: "הקמת מועצה עליונה משותפת לכל בתי האב הגדולים. שלטון מאוזן הפורק מתיחויות מעמדיות, מעגן זכויות אזרחיות לכל שכבות העם, ומבטיח כי שום בית יחיד לא יוכל שוב לרדות בממלכה כולה."
+          summary: "מועצה עליונה משותפת המאזנת בין אצולה לזכויות העם.",
+          chronicle: "הקמת מועצה עליונה משותפת לכל בתי האב הגדולים. שלטון מאוזן הפורק מתיחויות מעמדיות, מעגן זכויות אזרחיות לכל שכבות העם, ומבטיח כי שום בית יחיד לא יוכל שוב לרדות בממלכה כולה."
         },
         "ARC-06": {
           titleHe: "רודן הברזל והאפר",
           titleEn: "The Ashen Tyrant / Lord of the Bastion",
-          epilogueHe: "סדר נוקשה ואכזרי המושג בחומות ברזל ובגרדומים בכיכרות העיר. הפחד שזרעת מגן על וסטרוז מפני כאוס ואיומים חיצוניים, אך המחיר ששולם הוא שממה תרבותית, שתיקה רועמת ושנאה שקטה הרוחשת בצללים."
+          summary: "סדר נוקשה הנאכף בחומות ברזל ובגרדומים בכיכרות.",
+          chronicle: "סדר נוקשה ואכזרי המושג בחומות ברזל ובגרדומים בכיכרות העיר. הפחד שזרעת מגן על וסטרוז מפני כאוס ואיומים חיצוניים, אך המחיר ששולם הוא שממה תרבותית ושתיקה רועמת בצללים."
         },
         "ARC-07": {
           titleHe: "שומר הסודות והכשף",
           titleEn: "The Mystic Warden",
-          epilogueHe: "תחיית הקסם העתיק והידע הואליריאני ברחבי הממלכה. לחשי מגן, פלדה ואליריאנית ונבואות קדומות חוברים יחד לשמירה על שלום וסטרוז מפני כוחות קוסמיים ואיומים שמעבר להבנת בני התמותה."
+          summary: "תחיית הקסם הואליריאני ולחשי מגן קדומים להגנת הממלכה.",
+          chronicle: "תחיית הקסם העתיק והידע הואליריאני ברחבי הממלכה. לחשי מגן, פלדה ואליריאנית ונבואות קדומות חוברים יחד לשמירה על שלום וסטרוז מפני כוחות קוסמיים ואיומים שמעבר להבנת בני התמותה."
         },
         "ARC-08": {
           titleHe: "משקם ההריסות הפרגמטי",
           titleEn: "The Pragmatic Restorer",
-          epilogueHe: "בנייה מחדש סבלנית של הערים החרבות, חידוש קווי הסחר העולמיים עם הערים החופשיות באסוס, ופיוס הדרגתי ועקבי בין כל הבתים המסוכסכים. שלטונך הניח את היסודות לריפוי פצעי המלחמה."
+          summary: "בנייה מחדש סבלנית של הערים החרבות ופיוס בין הבתים.",
+          chronicle: "בנייה מחדש סבלנית של הערים החרבות, חידוש קווי הסחר העולמיים עם הערים החופשיות באסוס, ופיוס הדרגתי ועקבי בין כל הבתים המסוכסכים."
         }
       }
     };
     /* --- PYTHON_DATA_END --- */
 
-    /* ==========================================================================
-       CENTRALIZED STATE MANAGEMENT ENGINE (PRD Section 9.2)
-       ========================================================================== */
+    /* Centralized State Management */
     const AppState = {
       currentSlide: 1,
       totalSlides: 10,
       decision1_scores: { targaryen: 0, stark: 0, lannister: 0, watch: 0 },
-      decision1_answers: [null, null, null], // Choice index per question
-      decision1_faction: null,               // Resolved faction: targaryen | stark | lannister | watch
-      decision2_philosophy: null,            // Resolved doctrine: iron_fist | just_law | guard | commerce
-      outcome: {
-        archetypeId: null,
-        titleHebrew: '',
-        titleEnglish: '',
-        stabilityScore: 0,
-        prosperityScore: 0,
-        defenseScore: 0,
-        epilogueText: ''
-      },
+      decision1_answers: [null, null, null],
+      decision1_faction: null,
+      decision2_philosophy: null,
+      outcome: { archetypeId: null, stability: 0, prosperity: 0, defense: 0 },
       isTransitioning: false,
       flameIntensity: 65,
-      blizzardActive: false,
-      webglAvailable: true
+      frostWiped: false
     };
 
-    /* ==========================================================================
-       PRESENTATION ENGINE & NAVIGATION CONTROLLER (PRD Section 9.1)
-       ========================================================================== */
+    /* Presentation Controller */
     const PresentationEngine = {
       init() {
         this.renderDots();
-        this.renderQuizQuestion(0);
+        this.renderQuizStep(0);
         this.bindEvents();
         this.updateSlideUI();
-        initAtmosphericEngine();
+        initParticleCanvas();
       },
 
       renderDots() {
-        const dotsNav = document.getElementById('jump-dots');
-        dotsNav.innerHTML = '';
+        const dotsContainer = document.getElementById('jump-dots');
+        dotsContainer.innerHTML = '';
         for (let i = 1; i <= AppState.totalSlides; i++) {
           const dot = document.createElement('div');
           dot.className = `jump-dot ${i === 1 ? 'active' : ''}`;
           dot.title = `שקופית ${i}`;
           dot.addEventListener('click', () => this.tryJumpToSlide(i));
-          dotsNav.appendChild(dot);
+          dotsContainer.appendChild(dot);
         }
       },
 
       bindEvents() {
-        // Keyboard RTL Navigation (FR-NAV-02)
+        // Keyboard navigation (FR-NAV-02)
         window.addEventListener('keydown', (e) => {
           if (AppState.isTransitioning) return;
-
           switch (e.key) {
             case 'ArrowLeft': // Forward in Hebrew RTL
             case ' ':
@@ -2039,95 +2052,73 @@
               e.preventDefault();
               this.nextSlide();
               break;
-
             case 'ArrowRight': // Backward in Hebrew RTL
             case 'PageUp':
               e.preventDefault();
               this.prevSlide();
               break;
-
-            // Direct Jump Keys (FR-NAV-03)
             case '1': case '2': case '3': case '4': case '5': case '6':
               this.tryJumpToSlide(parseInt(e.key, 10));
               break;
-
             case '7': case '8':
               this.tryJumpToSlide(parseInt(e.key, 10));
               break;
-
             case '9':
               this.tryJumpToSlide(9);
               break;
-
             case '0':
               this.tryJumpToSlide(10);
               break;
           }
         });
 
-        // Touch Swipe Handling for Tablets and Mobile
-        let touchStartX = 0;
-        window.addEventListener('touchstart', (e) => {
-          touchStartX = e.changedTouches[0].clientX;
-        }, { passive: true });
-
+        // Touch Swipe
+        let startX = 0;
+        window.addEventListener('touchstart', (e) => { startX = e.changedTouches[0].clientX; }, { passive: true });
         window.addEventListener('touchend', (e) => {
-          const touchEndX = e.changedTouches[0].clientX;
-          const diffX = touchEndX - touchStartX;
-          if (Math.abs(diffX) > 60) {
-            if (diffX < 0) {
-              // Swipe Left in RTL advances forward
-              this.nextSlide();
-            } else {
-              // Swipe Right advances backward
-              this.prevSlide();
-            }
+          const diff = e.changedTouches[0].clientX - startX;
+          if (Math.abs(diff) > 55) {
+            if (diff < 0) this.nextSlide();
+            else this.prevSlide();
           }
         }, { passive: true });
       },
 
-      showGateToast() {
+      showToast() {
         const toast = document.getElementById('gate-toast');
         toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 2800);
+        setTimeout(() => toast.classList.remove('show'), 2600);
       },
 
       canAccessSlide(targetIndex) {
-        // Gating Rules (FR-NAV-03):
-        // Slides 7 and 8 require Decision 1 (Quiz completed)
-        if (targetIndex >= 7 && !AppState.decision1_faction) {
-          return false;
-        }
-        // Slides 9 and 10 require Decision 2 (Doctrine selected)
-        if (targetIndex >= 9 && !AppState.decision2_philosophy) {
-          return false;
-        }
+        if (targetIndex >= 7 && !AppState.decision1_faction) return false;
+        if (targetIndex >= 9 && !AppState.decision2_philosophy) return false;
         return true;
       },
 
       tryJumpToSlide(targetIndex) {
         if (targetIndex < 1 || targetIndex > AppState.totalSlides) return;
         if (!this.canAccessSlide(targetIndex)) {
-          this.showGateToast();
+          this.showToast();
           return;
         }
         this.goToSlide(targetIndex);
       },
 
       nextSlide() {
-        const nextIndex = AppState.currentSlide + 1;
-        if (nextIndex > AppState.totalSlides) return;
-        if (!this.canAccessSlide(nextIndex)) {
-          this.showGateToast();
+        const next = AppState.currentSlide + 1;
+        if (next > AppState.totalSlides) return;
+        if (!this.canAccessSlide(next)) {
+          this.showToast();
           return;
         }
-        this.goToSlide(nextIndex);
+        this.goToSlide(next);
       },
 
       prevSlide() {
-        const prevIndex = AppState.currentSlide - 1;
-        if (prevIndex < 1) return;
-        this.goToSlide(prevIndex);
+        const prev = AppState.currentSlide - 1;
+        if (prev < 1) return;
+        this.goToSlide(prev);
       },
 
       goToSlide(targetIndex) {
@@ -2149,252 +2140,240 @@
           targetEl.setAttribute('aria-hidden', 'false');
         }
 
-        // Slide-specific hooks
-        if (targetIndex === 9) {
-          this.calculateAndRenderMetrics();
-        } else if (targetIndex === 10) {
-          this.renderCoronationReveal();
-        }
+        // Slide dynamic triggers
+        if (targetIndex === 7) this.renderBattleReaction();
+        if (targetIndex === 9) this.renderConsequencesMetrics();
+        if (targetIndex === 10) this.renderCoronationReveal();
 
         this.updateSlideUI();
 
-        // 600ms debounce guard (FR-NAV-06)
-        setTimeout(() => {
-          AppState.isTransitioning = false;
-        }, 600);
+        setTimeout(() => { AppState.isTransitioning = false; }, 600);
       },
 
       updateSlideUI() {
-        // Update Slide Counter with Numeric Directional Isolation (FR-NAV-04)
-        const counterEl = document.getElementById('slide-counter');
-        const formattedCurrent = String(AppState.currentSlide).padStart(2, '0');
-        counterEl.innerHTML = `שקופית <span class="current-num num-isolated">${formattedCurrent}</span> מתוך <span class="num-isolated">10</span>`;
+        const formatted = String(AppState.currentSlide).padStart(2, '0');
+        document.getElementById('slide-counter').innerHTML = `שקופית <span class="current-num num-isolated">${formatted}</span> מתוך <span class="num-isolated">10</span>`;
 
-        // Update Progress Bar (FR-NAV-05)
-        const progressBar = document.getElementById('progress-bar');
-        const pct = ((AppState.currentSlide - 1) / (AppState.totalSlides - 1)) * 100;
-        progressBar.style.width = `${Math.max(10, pct)}%`;
+        const pct = ((AppState.currentSlide - 1) / 9) * 100;
+        document.getElementById('progress-bar').style.width = `${Math.max(10, pct)}%`;
 
-        // Update Jump Dots
-        const dots = document.querySelectorAll('.jump-dot');
-        dots.forEach((dot, idx) => {
-          const slideNum = idx + 1;
-          dot.classList.toggle('active', slideNum === AppState.currentSlide);
-          dot.classList.toggle('gated', !this.canAccessSlide(slideNum));
+        document.querySelectorAll('.jump-dot').forEach((dot, idx) => {
+          const sNum = idx + 1;
+          dot.classList.toggle('active', sNum === AppState.currentSlide);
+          dot.classList.toggle('gated', !this.canAccessSlide(sNum));
         });
 
-        // Update Button States
-        const btnPrev = document.getElementById('btn-prev');
-        const btnNext = document.getElementById('btn-next');
-        btnPrev.disabled = AppState.currentSlide === 1;
-        btnNext.disabled = AppState.currentSlide === AppState.totalSlides;
+        document.getElementById('btn-prev').disabled = AppState.currentSlide === 1;
+        document.getElementById('btn-next').disabled = AppState.currentSlide === AppState.totalSlides;
       },
 
-      /* Region showcase interaction (Slide 02) */
-      selectRegion(idx) {
-        const region = GAME_DATA.regions[idx];
-        if (!region) return;
-
-        // Button highlight
-        const buttons = document.querySelectorAll('#region-btn-group .region-item-btn');
-        buttons.forEach((btn, i) => btn.classList.toggle('active', i === idx));
-
-        // Update details card
-        document.getElementById('reg-badge').textContent = region.badge;
-        document.getElementById('reg-title').textContent = region.nameHe;
-        document.getElementById('reg-lore').textContent = region.lore;
-        document.getElementById('reg-stat-army').textContent = region.army;
-        document.getElementById('reg-stat-res').textContent = region.resource;
-        document.getElementById('reg-stat-env').textContent = region.climate;
-      },
-
-      highlightHouse(el) {
-        document.querySelectorAll('.house-card').forEach(c => c.classList.remove('selected'));
-        el.classList.add('selected');
-      },
-
-      updateFlame(val) {
-        AppState.flameIntensity = parseInt(val, 10);
-        document.getElementById('flame-intensity-val').textContent = `${val}%`;
-      },
-
-      toggleBlizzard() {
-        AppState.blizzardActive = !AppState.blizzardActive;
-        const runes = document.getElementById('runes-box');
-        const btn = document.getElementById('btn-blizzard-toggle');
-        if (AppState.blizzardActive) {
-          runes.style.display = 'block';
-          btn.textContent = '❄️ הסתר את רונות הקרח';
-        } else {
-          runes.style.display = 'none';
-          btn.textContent = '❄️ הבט אל תוך סופת הקרח';
+      toggleLore(drawerId) {
+        const drawer = document.getElementById(drawerId);
+        if (drawer) {
+          drawer.style.display = (drawer.style.display === 'block') ? 'none' : 'block';
         }
       },
 
-      /* Quiz Engine (Slide 06) with Deterministic Tie-Breaker (PRD 7 & 8) */
-      renderQuizQuestion(qIdx) {
-        const question = GAME_DATA.quizQuestions[qIdx];
-        if (!question) return;
+      /* Slide 02 Map Selection */
+      selectRegion(idx) {
+        const reg = GAME_DATA.regions[idx];
+        if (!reg) return;
 
-        document.getElementById('quiz-step-title').textContent = question.title;
-        document.getElementById('quiz-progress-text').textContent = `התקדמות: ${Math.round(((qIdx + 1) / 3) * 100)}%`;
-        document.getElementById('quiz-question-text').textContent = question.prompt;
+        document.querySelectorAll('.map-region-pin').forEach((pin, i) => pin.classList.toggle('active', i === idx));
+
+        document.getElementById('reg-badge').textContent = reg.badge;
+        document.getElementById('reg-title').textContent = reg.nameHe;
+        document.getElementById('reg-lore').textContent = reg.lore;
+        document.getElementById('reg-stat-army').textContent = reg.army;
+        document.getElementById('reg-meter-fill').style.width = `${reg.pct}%`;
+        document.getElementById('reg-meter-fill').style.background = reg.color;
+      },
+
+      /* Slide 03 House Spotlight */
+      spotlightHouse(houseKey, el) {
+        document.querySelectorAll('.heraldic-shield-item').forEach(h => h.classList.remove('active'));
+        if (el && el.classList.contains('heraldic-shield-item')) {
+          el.classList.add('active');
+        }
+        const data = GAME_DATA.nineHouses[houseKey];
+        if (data) {
+          document.getElementById('spot-house-motto').textContent = `"${data.motto}"`;
+          document.getElementById('spot-house-desc').textContent = data.desc;
+        }
+      },
+
+      /* Slide 04 Flame Dial */
+      updateFlame(val) {
+        AppState.flameIntensity = parseInt(val, 10);
+        document.getElementById('flame-readout').textContent = `${val}%`;
+      },
+
+      /* Slide 05 Frost Toggle */
+      toggleFrost() {
+        AppState.frostWiped = !AppState.frostWiped;
+        const drawer = document.getElementById('frost-runes-drawer');
+        const btn = document.getElementById('btn-wipe-frost');
+        if (AppState.frostWiped) {
+          drawer.style.display = 'block';
+          btn.textContent = '❄️ כסה מחדש בשכבת קרח';
+        } else {
+          drawer.style.display = 'none';
+          btn.textContent = '❄️ נגב את שכבת הכפור וחשוף רונות קפואות';
+        }
+      },
+
+      /* Slide 06 Loyalty Quiz with Tie-breaker (PRD 7 & 8) */
+      renderQuizStep(qIdx) {
+        const q = GAME_DATA.quizQuestions[qIdx];
+        if (!q) return;
+
+        document.getElementById('quiz-step-title').textContent = q.title;
+        document.getElementById('quiz-progress-label').textContent = `שלב ${qIdx + 1}/3`;
+        document.getElementById('quiz-question-prompt').textContent = q.prompt;
 
         const container = document.getElementById('quiz-options-container');
         container.innerHTML = '';
         const letters = ["א'", "ב'", "ג'", "ד'"];
 
-        question.options.forEach((opt, oIdx) => {
-          const btn = document.createElement('button');
-          btn.className = 'quiz-option-btn';
-          if (AppState.decision1_answers[qIdx] === oIdx) {
-            btn.classList.add('selected');
-          }
-          btn.innerHTML = `
-            <span class="quiz-option-letter">${letters[oIdx]}</span>
-            <span>${opt.text}</span>
+        q.options.forEach((opt, oIdx) => {
+          const card = document.createElement('div');
+          card.className = 'quiz-choice-card';
+          if (AppState.decision1_answers[qIdx] === oIdx) card.classList.add('selected');
+          card.innerHTML = `
+            <div class="quiz-choice-badge">${letters[oIdx]}</div>
+            <div style="font-size: 0.95rem;">${opt.text}</div>
           `;
-          btn.onclick = () => this.handleQuizAnswer(qIdx, oIdx, opt.faction);
-          container.appendChild(btn);
+          card.onclick = () => this.handleQuizPick(qIdx, oIdx);
+          container.appendChild(card);
         });
       },
 
-      handleQuizAnswer(qIdx, oIdx, faction) {
-        // Record choice
+      handleQuizPick(qIdx, oIdx) {
         AppState.decision1_answers[qIdx] = oIdx;
-
-        // Advance to next question or resolve
         if (qIdx < 2) {
-          this.renderQuizQuestion(qIdx + 1);
+          this.renderQuizStep(qIdx + 1);
         } else {
-          this.resolveQuizOutcome();
+          this.resolveQuiz();
         }
       },
 
-      resolveQuizOutcome() {
-        // Recalculate scores (+3 points per chosen faction)
+      resolveQuiz() {
+        // Recalculate faction points (+3 each)
         AppState.decision1_scores = { targaryen: 0, stark: 0, lannister: 0, watch: 0 };
-        AppState.decision1_answers.forEach((optIndex, qIdx) => {
-          if (optIndex !== null) {
-            const faction = GAME_DATA.quizQuestions[qIdx].options[optIndex].faction;
-            AppState.decision1_scores[faction] += 3;
+        AppState.decision1_answers.forEach((pick, qI) => {
+          if (pick !== null) {
+            const f = GAME_DATA.quizQuestions[qI].options[pick].faction;
+            AppState.decision1_scores[f] += 3;
           }
         });
 
-        // Deterministic Tie-Breaking Engine (PRD Section 7 & 8.1):
-        // 1. Highest score
-        // 2. Tie-break: Question 3 choice
-        // 3. Secondary Tie-break: Question 2 choice
-        // 4. Canonical hierarchy: Targaryen > Stark > Lannister > Watch
+        // Deterministic Tie-Breaker (PRD 7 & 8)
         const scores = AppState.decision1_scores;
-        let maxScore = -1;
-        let candidates = [];
-
-        for (const [faction, score] of Object.entries(scores)) {
-          if (score > maxScore) {
-            maxScore = score;
-            candidates = [faction];
-          } else if (score === maxScore) {
-            candidates.push(faction);
-          }
+        let max = -1;
+        let tied = [];
+        for (const [f, s] of Object.entries(scores)) {
+          if (s > max) { max = s; tied = [f]; }
+          else if (s === max) { tied.push(f); }
         }
 
-        let resolvedFaction = candidates[0];
-        if (candidates.length > 1) {
-          const q3Faction = GAME_DATA.quizQuestions[2].options[AppState.decision1_answers[2]]?.faction;
-          const q2Faction = GAME_DATA.quizQuestions[1].options[AppState.decision1_answers[1]]?.faction;
-
-          if (candidates.includes(q3Faction)) {
-            resolvedFaction = q3Faction;
-          } else if (candidates.includes(q2Faction)) {
-            resolvedFaction = q2Faction;
-          } else {
-            const canonicalOrder = ['targaryen', 'stark', 'lannister', 'watch'];
-            resolvedFaction = canonicalOrder.find(f => candidates.includes(f));
-          }
+        let winner = tied[0];
+        if (tied.length > 1) {
+          const q3f = GAME_DATA.quizQuestions[2].options[AppState.decision1_answers[2]]?.faction;
+          const q2f = GAME_DATA.quizQuestions[1].options[AppState.decision1_answers[1]]?.faction;
+          if (tied.includes(q3f)) winner = q3f;
+          else if (tied.includes(q2f)) winner = q2f;
+          else winner = ['targaryen', 'stark', 'lannister', 'watch'].find(x => tied.includes(x));
         }
 
-        AppState.decision1_faction = resolvedFaction;
+        AppState.decision1_faction = winner;
+        const hData = GAME_DATA.houses[winner];
 
-        // Display outcome banner
-        const banner = document.getElementById('quiz-result-banner');
-        const houseData = GAME_DATA.houses[resolvedFaction];
-        document.getElementById('quiz-winning-house-name').textContent = `${houseData.nameHe} (${houseData.mottoHe})`;
-        banner.style.display = 'block';
-
+        document.getElementById('quiz-winner-name').textContent = `${hData.nameHe} ("${hData.mottoHe}")`;
+        document.getElementById('quiz-locked-result').style.display = 'block';
         this.updateSlideUI();
       },
 
-      selectBattleSector(idx, el) {
-        document.querySelectorAll('.battle-sector-card').forEach(c => c.classList.remove('active'));
+      /* Slide 07 Dynamic Battle Reaction */
+      renderBattleReaction() {
+        const faction = AppState.decision1_faction || 'stark';
+        const titles = {
+          targaryen: "תקיפת דרקונים אווירית — בית טארגאריין מכלה את אגפי האויב באש",
+          stark:     "חומת מגן צפונית — בית סטארק בולם את הסתערות הכפור בחרבות פלדה",
+          lannister: "פלנגות זהב כבדות — בית לאניסטר מכריע את המערכה בעוצמת שכירי חרב",
+          watch:     "מטח חיצי זכוכית דרקון — משמר הלילה מגן על הפרצה בחירוף נפש"
+        };
+        const tags = {
+          targaryen: "עוצמת אש: +30% נזק שטח",
+          stark:     "חוסן עמדות: +35% שרידות",
+          lannister: "אספקה ושריון: +25% עתודות",
+          watch:     "הגנה נגד חושך: +40% קטלניות"
+        };
+        document.getElementById('battle-faction-title').textContent = titles[faction];
+        document.getElementById('battle-faction-tag').textContent = tags[faction];
+      },
+
+      switchFront(idx, el) {
+        document.querySelectorAll('.battle-front-card').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
       },
 
-      /* Decision 2: Doctrines of Rule (Slide 08) */
-      selectDoctrine(doctrineKey, el) {
-        AppState.decision2_philosophy = doctrineKey;
-        document.querySelectorAll('.doctrine-card').forEach(c => c.classList.remove('selected'));
+      /* Slide 08 Doctrine Selection */
+      selectDoctrine(key, el) {
+        AppState.decision2_philosophy = key;
+        document.querySelectorAll('.doctrine-tarot-card').forEach(c => c.classList.remove('selected'));
         el.classList.add('selected');
         this.updateSlideUI();
       },
 
-      /* Algorithmic Metrics Engine (Slide 09) - Exact PRD Formulas */
-      calculateAndRenderMetrics() {
-        const faction = AppState.decision1_faction || 'targaryen';
-        const philosophy = AppState.decision2_philosophy || 'iron_fist';
+      /* Slide 09 Consequences Metrics (PRD Formulas) */
+      renderConsequencesMetrics() {
+        const faction = AppState.decision1_faction || 'stark';
+        const doctrine = AppState.decision2_philosophy || 'just_law';
 
-        // 1. Political Stability Formula (PRD 7)
-        const baseStability = { targaryen: 65, stark: 85, lannister: 80, watch: 75 }[faction] || 75;
-        const stabModifiers = {
+        // 1. Stability (PRD 7)
+        const baseStab = { targaryen: 65, stark: 85, lannister: 80, watch: 75 }[faction] || 75;
+        const stabMods = {
           iron_fist: { targaryen: 15, lannister: 10, stark: -15, watch: -10 },
-          just_law: { stark: 15, watch: 10, lannister: 5, targaryen: -10 },
-          guard: { watch: 15, stark: 10, lannister: -5, targaryen: 0 },
-          commerce: { lannister: 15, stark: 5, targaryen: 0, watch: -15 }
+          just_law:  { stark: 15, watch: 10, lannister: 5, targaryen: -10 },
+          guard:     { watch: 15, stark: 10, lannister: -5, targaryen: 0 },
+          commerce:  { lannister: 15, stark: 5, targaryen: 0, watch: -15 }
         };
-        const modStab = stabModifiers[philosophy]?.[faction] || 0;
-        const stability = Math.min(98, Math.max(30, baseStability + modStab));
+        const stab = Math.min(98, Math.max(30, baseStab + (stabMods[doctrine]?.[faction] || 0)));
 
-        // 2. People's Prosperity Formula (PRD 7)
-        const baseProsperity = { lannister: 75, stark: 70, watch: 50, targaryen: 45 }[faction] || 60;
-        const philProsperityBonus = { commerce: 25, just_law: 20, guard: 5, iron_fist: -20 }[philosophy] || 0;
-        const prosperity = Math.min(95, Math.max(20, baseProsperity + philProsperityBonus));
+        // 2. Prosperity (PRD 7)
+        const baseProsp = { lannister: 75, stark: 70, watch: 50, targaryen: 45 }[faction] || 60;
+        const prospBonus = { commerce: 25, just_law: 20, guard: 5, iron_fist: -20 }[doctrine] || 0;
+        const prosp = Math.min(95, Math.max(20, baseProsp + prospBonus));
 
-        // 3. Defense Readiness Formula (PRD 7)
-        const baseDefense = { watch: 95, targaryen: 90, stark: 85, lannister: 65 }[faction] || 80;
-        const philDefenseBonus = { guard: 25, iron_fist: 15, just_law: 5, commerce: -15 }[philosophy] || 0;
-        const defense = Math.min(99, Math.max(40, baseDefense + philDefenseBonus));
+        // 3. Defense (PRD 7)
+        const baseDef = { watch: 95, targaryen: 90, stark: 85, lannister: 65 }[faction] || 80;
+        const defBonus = { guard: 25, iron_fist: 15, just_law: 5, commerce: -15 }[doctrine] || 0;
+        const def = Math.min(99, Math.max(40, baseDef + defBonus));
 
-        // Store in state
-        AppState.outcome.stabilityScore = stability;
-        AppState.outcome.prosperityScore = prosperity;
-        AppState.outcome.defenseScore = defense;
+        AppState.outcome = { stability: stab, prosperity: prosp, defense: def };
 
-        // Render Animated Bars
-        document.getElementById('metric-stability-val').textContent = `${stability}%`;
-        document.getElementById('bar-stability').style.width = `${stability}%`;
+        // Radial Ring animation (circumference = 339.29)
+        const circ = 339.29;
+        document.getElementById('val-stability').textContent = `${stab}%`;
+        document.getElementById('ring-stability').style.strokeDashoffset = circ - (circ * stab / 100);
 
-        document.getElementById('metric-prosperity-val').textContent = `${prosperity}%`;
-        document.getElementById('bar-prosperity').style.width = `${prosperity}%`;
+        document.getElementById('val-prosperity').textContent = `${prosp}%`;
+        document.getElementById('ring-prosperity').style.strokeDashoffset = circ - (circ * prosp / 100);
 
-        document.getElementById('metric-defense-val').textContent = `${defense}%`;
-        document.getElementById('bar-defense').style.width = `${defense}%`;
+        document.getElementById('val-defense').textContent = `${def}%`;
+        document.getElementById('ring-defense').style.strokeDashoffset = circ - (circ * def / 100);
 
-        // Narrative synthesis summary
-        const houseName = GAME_DATA.houses[faction].nameHe;
-        const synthesisBox = document.getElementById('fate-synthesis-text');
-        synthesisBox.innerHTML = `
-          הברית עם <strong>${houseName}</strong> בשילוב דוקטרינת שלטונך הניבו יציבות פוליטית של <span class="num-isolated">${stability}%</span>,
-          רווחת אוכלוסייה של <span class="num-isolated">${prosperity}%</span>, ומוכנות ביטחונית של <span class="num-isolated">${defense}%</span>.
-          מאזן כוחות זה מגדיר את אופי העידן החדש בווסטרוז.
-        `;
+        const hName = GAME_DATA.houses[faction].nameHe;
+        document.getElementById('realm-synergy-badge').textContent = `ברית: ${hName} | מאזן ממלכתי: ${stab}% יציבות, ${prosp}% שגשוג, ${def}% הגנה`;
+        document.getElementById('s09-synthesis-text').textContent =
+          `החיבור בין ברית ${hName} לפילוסופיה הנבחרת ביסס יציבות פוליטית של ${stab}%, רמת חיים של ${prosp}%, ומוכנות ביטחונית של ${def}%. שבע הממלכות עוברות לעידן חדש.`;
       },
 
-      /* Slide 10: Combinatorial Matrix to 8 Archetypes (PRD Section 8.2 & 8.3) */
+      /* Slide 10 Coronation Reveal (16 -> 8 Matrix) */
       renderCoronationReveal() {
-        const faction = AppState.decision1_faction || 'targaryen';
-        const philosophy = AppState.decision2_philosophy || 'iron_fist';
+        const faction = AppState.decision1_faction || 'stark';
+        const doctrine = AppState.decision2_philosophy || 'just_law';
 
-        // 16 -> 8 Deterministic Mapping Matrix from PRD 8.2
         const matrix = {
           targaryen: { iron_fist: 'ARC-01', just_law: 'ARC-08', guard: 'ARC-07', commerce: 'ARC-08' },
           stark:     { iron_fist: 'ARC-06', just_law: 'ARC-02', guard: 'ARC-04', commerce: 'ARC-05' },
@@ -2402,121 +2381,99 @@
           watch:     { iron_fist: 'ARC-06', just_law: 'ARC-04', guard: 'ARC-04', commerce: 'ARC-08' }
         };
 
-        const archetypeId = matrix[faction]?.[philosophy] || 'ARC-01';
-        const archetype = GAME_DATA.archetypes[archetypeId];
+        const arcId = matrix[faction]?.[doctrine] || 'ARC-02';
+        const arc = GAME_DATA.archetypes[arcId];
 
-        AppState.outcome.archetypeId = archetypeId;
-        AppState.outcome.titleHebrew = archetype.titleHe;
-        AppState.outcome.titleEnglish = archetype.titleEn;
-        AppState.outcome.epilogueText = archetype.epilogueHe;
-
-        document.getElementById('reveal-title-he').textContent = archetype.titleHe;
-        document.getElementById('reveal-title-en').innerHTML = `<bdi>${archetype.titleEn}</bdi>`;
-        document.getElementById('reveal-epilogue-text').textContent = archetype.epilogueHe;
+        document.getElementById('coronation-title-he').textContent = arc.titleHe;
+        document.getElementById('coronation-title-en').innerHTML = `<bdi>${arc.titleEn}</bdi>`;
+        document.getElementById('coronation-summary-lead').textContent = arc.summary;
+        document.getElementById('coronation-full-chronicle').textContent = arc.chronicle;
       },
 
       resetClaim() {
-        // Clean reset of decisions and scores (FR-STATE-02)
         AppState.decision1_scores = { targaryen: 0, stark: 0, lannister: 0, watch: 0 };
         AppState.decision1_answers = [null, null, null];
         AppState.decision1_faction = null;
         AppState.decision2_philosophy = null;
 
-        // Reset quiz banner & selections
-        const quizBanner = document.getElementById('quiz-result-banner');
-        if (quizBanner) quizBanner.style.display = 'none';
-        document.querySelectorAll('.doctrine-card').forEach(c => c.classList.remove('selected'));
+        const quizLock = document.getElementById('quiz-locked-result');
+        if (quizLock) quizLock.style.display = 'none';
 
-        this.renderQuizQuestion(0);
+        document.querySelectorAll('.doctrine-tarot-card').forEach(c => c.classList.remove('selected'));
+        this.renderQuizStep(0);
         this.goToSlide(1);
       }
     };
 
-    /* ==========================================================================
-       ATMOSPHERIC CANVAS & PARTICLE ENGINE (PRD Section 11 & 16.2)
-       Continuous 60 FPS ambient particles with slide-specific thematic tuning
-       ========================================================================== */
-    function initAtmosphericEngine() {
+    /* Atmospheric Continuous 60 FPS Particle Canvas */
+    function initParticleCanvas() {
       const canvas = document.getElementById('bg-canvas');
       const ctx = canvas.getContext('2d');
-      let width = canvas.width = window.innerWidth;
-      let height = canvas.height = window.innerHeight;
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
 
       window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
       });
 
-      // 120 particle pool optimized for 60 FPS performance across devices
-      const particleCount = 120;
+      const count = 110;
       const particles = [];
-
-      for (let i = 0; i < particleCount; i++) {
+      for (let i = 0; i < count; i++) {
         particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          radius: Math.random() * 2.5 + 0.8,
-          vx: (Math.random() - 0.5) * 0.8,
-          vy: -Math.random() * 1.5 - 0.3,
-          alpha: Math.random() * 0.7 + 0.3,
-          colorType: 'gold' // gold | fire | frost
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 2.2 + 0.8,
+          vx: (Math.random() - 0.5) * 0.7,
+          vy: -Math.random() * 1.4 - 0.2,
+          a: Math.random() * 0.7 + 0.3
         });
       }
 
-      function renderFrame() {
-        ctx.clearRect(0, 0, width, height);
+      function loop() {
+        ctx.clearRect(0, 0, w, h);
+        const s = AppState.currentSlide;
+        let color = 'rgba(212, 175, 55, ';
+        let wind = 0;
+        let speed = 1.0;
 
-        // Slide-thematic parameters
-        const slide = AppState.currentSlide;
-        let baseColor = 'rgba(212, 175, 55, '; // default gold
-        let windX = 0;
-        let speedMult = 1.0;
-
-        if (slide === 4) { // Fire & Blood
-          baseColor = 'rgba(255, 87, 34, ';
-          speedMult = (AppState.flameIntensity / 50);
-        } else if (slide === 5) { // Winter is Coming
-          baseColor = 'rgba(0, 229, 255, ';
-          windX = AppState.blizzardActive ? -3.5 : -1.2;
-          speedMult = AppState.blizzardActive ? 2.5 : 1.2;
-        } else if (slide === 7) { // Great War
-          // Alternate sparks
-          baseColor = 'rgba(255, 120, 50, ';
-          speedMult = 1.6;
-        } else if (slide === 10) { // Coronation gold rain
-          baseColor = 'rgba(255, 215, 0, ';
-          speedMult = 1.3;
+        if (s === 4) {
+          color = 'rgba(255, 87, 34, ';
+          speed = AppState.flameIntensity / 45;
+        } else if (s === 5) {
+          color = 'rgba(0, 229, 255, ';
+          wind = -2.2;
+          speed = 1.8;
+        } else if (s === 7) {
+          color = 'rgba(255, 140, 50, ';
+          speed = 1.6;
+        } else if (s === 10) {
+          color = 'rgba(255, 215, 0, ';
+          speed = 1.3;
         }
 
         for (let i = 0; i < particles.length; i++) {
           const p = particles[i];
+          p.y += p.vy * speed;
+          p.x += (p.vx + wind) * speed;
 
-          p.y += p.vy * speedMult;
-          p.x += (p.vx + windX) * speedMult;
-
-          // Wrap boundaries
-          if (p.y < -10) {
-            p.y = height + 10;
-            p.x = Math.random() * width;
-          }
-          if (p.x < -10) p.x = width + 10;
-          if (p.x > width + 10) p.x = -10;
+          if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
 
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-          ctx.fillStyle = baseColor + p.alpha + ')';
-          ctx.shadowBlur = p.radius * 4;
-          ctx.shadowColor = baseColor + '0.8)';
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = color + p.a + ')';
+          ctx.shadowBlur = p.r * 4;
+          ctx.shadowColor = color + '0.8)';
           ctx.fill();
         }
 
-        requestAnimationFrame(renderFrame);
+        requestAnimationFrame(loop);
       }
-
-      renderFrame();
+      loop();
     }
 
-    // Initialize Presentation Engine on DOM load
     document.addEventListener('DOMContentLoaded', () => {
       PresentationEngine.init();
     });
