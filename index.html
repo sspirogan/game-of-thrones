@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Cinzel+Decorative:wght@700;900&family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Three.js CDN (with automatic fallback to high-performance procedural 2D Canvas engine) -->
+  <!-- Three.js Library CDN (PRD Section 11 & 13) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <style>
@@ -77,14 +77,13 @@
       font-weight: 700;
     }
 
-    /* Interactive element focus outlines */
     button:focus-visible, input:focus-visible, .interactive-item:focus-visible {
       outline: 2px solid var(--color-aged-gold);
       outline-offset: 3px;
     }
 
     /* ==========================================================================
-       ATMOSPHERIC CANVAS & CINEMATIC VIGNETTE
+       THREE.JS WEBGL CANVAS & ATMOSPHERIC VIGNETTE (PRD 11.1 & 13)
        ========================================================================== */
     #bg-canvas {
       position: fixed;
@@ -104,12 +103,12 @@
       height: 100vh;
       z-index: 2;
       pointer-events: none;
-      background: radial-gradient(circle at center, transparent 35%, rgba(7, 7, 10, 0.88) 95%),
-                  linear-gradient(to bottom, rgba(7,7,10,0.65) 0%, transparent 15%, transparent 85%, rgba(7,7,10,0.85) 100%);
+      background: radial-gradient(circle at center, transparent 35%, rgba(7, 7, 10, 0.85) 95%),
+                  linear-gradient(to bottom, rgba(7,7,10,0.65) 0%, transparent 15%, transparent 85%, rgba(7,7,10,0.88) 100%);
     }
 
     /* ==========================================================================
-       PRESENTATION SHELL & PERSISTENT BARS
+       PRESENTATION APPLICATION CONTAINER
        ========================================================================== */
     #presentation-app {
       position: relative;
@@ -122,7 +121,7 @@
       overflow: hidden;
     }
 
-    /* Header */
+    /* Header Bar */
     #app-header {
       position: relative;
       width: 100%;
@@ -170,7 +169,7 @@
       letter-spacing: 1px;
     }
 
-    /* Slide Counter & Jump Dots */
+    /* Indicators & Slide Counter */
     .header-indicators {
       display: flex;
       align-items: center;
@@ -367,7 +366,7 @@
       pointer-events: all;
     }
 
-    /* Common visual slide header (Minimal & Punchy) */
+    /* Cinematic Visual Header */
     .slide-header-visual {
       text-align: center;
       margin-bottom: 20px;
@@ -442,7 +441,6 @@
 
     /* ==========================================================================
        SLIDE 01 — THE IRON THRONE (הכס ממתין)
-       Heroic throne room composition with swords and gold light
        ========================================================================== */
     .throne-hero-stage {
       position: relative;
@@ -513,8 +511,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 02 — WESTEROS MAP (מפת שבע הממלכות האינטראקטיבית)
-       Visual tactical map of the continent
+       SLIDE 02 — WESTEROS TACTICAL MAP (מפת שבע הממלכות)
        ========================================================================== */
     .westeros-map-grid {
       display: grid;
@@ -665,7 +662,6 @@
       color: var(--color-valyrian-steel);
     }
 
-    /* Night's Watch Independent Pedestal */
     .nights-watch-pedestal {
       background: linear-gradient(90deg, rgba(14, 15, 22, 0.95) 0%, rgba(25, 27, 36, 0.95) 50%, rgba(14, 15, 22, 0.95) 100%);
       border: 1px solid rgba(160, 165, 173, 0.4);
@@ -702,7 +698,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 04 — FIRE AND BLOOD (אש ודם — חוויית דרקאריס)
+       SLIDE 04 — FIRE AND BLOOD (אש ודם — מחוון דרקאריס)
        ========================================================================== */
     .draconic-visual-stage {
       display: grid;
@@ -771,7 +767,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 05 — WINTER IS COMING (החורף מתקרב — החומה)
+       SLIDE 05 — WINTER IS COMING (החורף מתקרב)
        ========================================================================== */
     .winter-visual-stage {
       display: grid;
@@ -834,7 +830,6 @@
 
     /* ==========================================================================
        SLIDE 06 — CHOOSE YOUR ALLIES [DECISION 1 QUIZ]
-       Visual dilemma cards
        ========================================================================== */
     .quiz-interactive-deck {
       max-width: 980px;
@@ -911,8 +906,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 07 — THE GREAT WAR (המלחמה הגדולה — תגובה דינמית)
-       Dynamically reacts to chosen faction
+       SLIDE 07 — THE GREAT WAR (המלחמה הגדולה)
        ========================================================================== */
     .battlefield-visual-stage {
       max-width: 1080px;
@@ -954,7 +948,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 08 — THE FUTURE OF WESTEROS [DECISION 2 DOCTRINE CARDS]
+       SLIDE 08 — THE FUTURE OF WESTEROS [DECISION 2 DOCTRINES]
        ========================================================================== */
     .doctrines-tarot-deck {
       display: grid;
@@ -1017,7 +1011,7 @@
     }
 
     /* ==========================================================================
-       SLIDE 09 — THE CONSEQUENCES (גורל הממלכה — לוח מחוונים עגול)
+       SLIDE 09 — THE CONSEQUENCES (גורל הממלכה)
        ========================================================================== */
     .consequences-visual-stage {
       max-width: 1040px;
@@ -1192,7 +1186,7 @@
 </head>
 <body>
 
-  <!-- Fullscreen WebGL / Procedural Particle Canvas (Continuous 60 FPS) -->
+  <!-- Fullscreen WebGL Three.js Canvas (PRD 11.1) -->
   <canvas id="bg-canvas"></canvas>
   <div class="vignette-overlay"></div>
 
@@ -1227,7 +1221,6 @@
            ====================================================================== -->
       <section class="slide active" id="slide-01" aria-hidden="false">
         <div class="throne-hero-stage">
-          <!-- Stylized Iron Throne Silhouette SVG -->
           <svg class="iron-throne-art-svg" viewBox="0 0 100 100">
             <defs>
               <linearGradient id="bladeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -1268,7 +1261,6 @@
             </div>
           </div>
 
-          <!-- Optional Click-to-Reveal Lore -->
           <button class="optional-details-trigger" onclick="PresentationEngine.toggleLore('drawer-s01')">
             <span>📜</span>
             <span>קרא את שבועת הדם המלכותית</span>
@@ -1290,47 +1282,39 @@
         </div>
 
         <div class="westeros-map-grid">
-          <!-- Tactical Map SVG with interactive pins -->
           <div class="tactical-map-canvas-frame">
             <svg class="map-svg-board" viewBox="0 0 500 420">
-              <!-- Stylized Westeros Landmass Silhouette -->
               <path d="M220 20 C280 20, 310 50, 300 90 C320 120, 290 150, 270 170 C280 200, 290 230, 260 270 C240 310, 280 340, 230 380 C190 390, 160 360, 150 320 C130 290, 150 250, 180 220 C160 190, 170 150, 200 120 C190 80, 190 40, 220 20 Z"
                     fill="#151722" stroke="#D4AF37" stroke-width="1.8" filter="drop-shadow(0 0 12px rgba(212,175,55,0.25))"/>
               
-              <!-- Mountain & Wall Lines -->
               <line x1="190" y1="50" x2="310" y2="50" stroke="#00E5FF" stroke-width="3" stroke-dasharray="4,2"/>
               <text x="250" y="44" fill="#00E5FF" font-size="10" font-family="Cinzel" text-anchor="middle">THE WALL</text>
 
-              <!-- Interactive Region Pins -->
-              <!-- The North -->
+              <!-- Region Pins -->
               <g class="map-region-pin active" style="--pin-glow: #00E5FF;" onclick="PresentationEngine.selectRegion(0)">
                 <circle cx="245" cy="95" r="14" fill="#00E5FF" fill-opacity="0.25" stroke="#00E5FF" stroke-width="2"/>
                 <text x="245" y="99" fill="#fff" font-size="11" text-anchor="middle" font-weight="bold">❄️</text>
                 <text x="245" y="122" fill="#00E5FF" font-size="9" text-anchor="middle" font-weight="bold">הצפון</text>
               </g>
 
-              <!-- The Riverlands -->
               <g class="map-region-pin" style="--pin-glow: #29B6F6;" onclick="PresentationEngine.selectRegion(1)">
                 <circle cx="230" cy="190" r="12" fill="#29B6F6" fill-opacity="0.25" stroke="#29B6F6" stroke-width="2"/>
                 <text x="230" y="194" fill="#fff" font-size="10" text-anchor="middle">🌊</text>
                 <text x="230" y="214" fill="#29B6F6" font-size="9" text-anchor="middle" font-weight="bold">ארצות הנהר</text>
               </g>
 
-              <!-- The Reach -->
               <g class="map-region-pin" style="--pin-glow: #66BB6A;" onclick="PresentationEngine.selectRegion(2)">
                 <circle cx="190" cy="275" r="12" fill="#66BB6A" fill-opacity="0.25" stroke="#66BB6A" stroke-width="2"/>
                 <text x="190" y="279" fill="#fff" font-size="10" text-anchor="middle">🌾</text>
                 <text x="190" y="299" fill="#66BB6A" font-size="9" text-anchor="middle" font-weight="bold">המשגב</text>
               </g>
 
-              <!-- Dorne -->
               <g class="map-region-pin" style="--pin-glow: #FFA726;" onclick="PresentationEngine.selectRegion(3)">
                 <circle cx="215" cy="355" r="12" fill="#FFA726" fill-opacity="0.25" stroke="#FFA726" stroke-width="2"/>
                 <text x="215" y="359" fill="#fff" font-size="10" text-anchor="middle">☀️</text>
                 <text x="215" y="379" fill="#FFA726" font-size="9" text-anchor="middle" font-weight="bold">דורן</text>
               </g>
 
-              <!-- King's Landing -->
               <g class="map-region-pin" style="--pin-glow: #D4AF37;" onclick="PresentationEngine.selectRegion(4)">
                 <circle cx="270" cy="235" r="14" fill="#D4AF37" fill-opacity="0.3" stroke="#D4AF37" stroke-width="2"/>
                 <text x="270" y="239" fill="#fff" font-size="11" text-anchor="middle">👑</text>
@@ -1339,7 +1323,6 @@
             </svg>
           </div>
 
-          <!-- Region Dynamic Card -->
           <div class="region-visual-card" id="region-card-display">
             <div>
               <svg class="region-banner-sigil" id="reg-sigil-icon" viewBox="0 0 24 24">
@@ -1369,7 +1352,6 @@
 
       <!-- ======================================================================
            SLIDE 03 — THE GREAT HOUSES & ORDERS (9 בתי האב + משמר הלילה)
-           Visual Heraldic Gallery
            ====================================================================== -->
       <section class="slide" id="slide-03" aria-hidden="true">
         <div class="slide-header-visual">
@@ -1379,7 +1361,6 @@
         </div>
 
         <div class="houses-grand-gallery">
-          <!-- 9 Traditional Great Houses Grid -->
           <div class="traditional-nine-grid">
             <!-- 1. Stark -->
             <div class="heraldic-shield-item active" style="--h-color: #00E5FF; --h-glow: rgba(0,229,255,0.4);" onclick="PresentationEngine.spotlightHouse('stark', this)">
@@ -1445,7 +1426,7 @@
             </div>
           </div>
 
-          <!-- Independent Order: Night's Watch -->
+          <!-- Night's Watch Separate Pedestal -->
           <div class="nights-watch-pedestal" onclick="PresentationEngine.spotlightHouse('watch', this)">
             <div class="pedestal-left">
               <svg class="pedestal-crow-icon" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
@@ -1459,7 +1440,6 @@
             </div>
           </div>
 
-          <!-- Active House Spotlight Card -->
           <div class="house-spotlight-box" id="house-spotlight-display">
             <div>
               <span id="spot-house-motto" style="font-family: var(--font-display); font-size: 1.15rem; color: var(--color-aged-gold); font-weight: 700;">
@@ -1477,8 +1457,7 @@
       </section>
 
       <!-- ======================================================================
-           SLIDE 04 — FIRE AND BLOOD (אש ודם)
-           Draconic Experience with Flame Dial
+           SLIDE 04 — FIRE AND BLOOD (אש ודם — חוויית דרקאריס)
            ====================================================================== -->
       <section class="slide" id="slide-04" aria-hidden="true">
         <div class="slide-header-visual">
@@ -1488,7 +1467,6 @@
         </div>
 
         <div class="draconic-visual-stage">
-          <!-- Dragon Art Stage -->
           <div class="dragon-silhouette-card">
             <svg class="dragon-svg-beast" viewBox="0 0 100 100">
               <path d="M50 15 C35 15, 20 25, 10 40 C25 35, 40 45, 45 60 C30 65, 20 80, 25 90 C38 82, 45 75, 50 68 C55 75, 62 82, 75 90 C80 80, 70 65, 55 60 C60 45, 75 35, 90 40 C80 25, 65 15, 50 15 Z"/>
@@ -1500,7 +1478,6 @@
             </div>
           </div>
 
-          <!-- Interactive Flame Dial -->
           <div class="flame-dial-control">
             <div style="font-size: 0.85rem; color: var(--color-valyrian-steel);">מחוון להבת הדרקון (<bdi>Dracarys Crucible</bdi>)</div>
             <div style="font-family: var(--font-royal); font-size: 2.5rem; color: var(--color-dragonfire); font-weight: 900; margin: 10px 0;" id="flame-readout">
@@ -1519,7 +1496,6 @@
 
       <!-- ======================================================================
            SLIDE 05 — WINTER IS COMING (החורף מתקרב)
-           The 700-foot Wall Experience
            ====================================================================== -->
       <section class="slide" id="slide-05" aria-hidden="true">
         <div class="slide-header-visual">
@@ -1529,7 +1505,6 @@
         </div>
 
         <div class="winter-visual-stage">
-          <!-- Monolith Ice Art -->
           <div class="ice-wall-monolith">
             <div style="font-family: var(--font-royal); font-size: 0.8rem; color: var(--color-glacial-blue);">
               700 רגל קרח // 300 מייל שמירה // 8,000 שנה
@@ -1545,7 +1520,6 @@
             </div>
           </div>
 
-          <!-- Interactive Frost Wipe -->
           <div style="background: rgba(14, 15, 22, 0.88); border: 1px solid rgba(0, 229, 255, 0.35); border-radius: 12px; padding: 24px; text-align: center;">
             <div style="font-size: 0.95rem; color: var(--color-parchment); margin-bottom: 14px;">
               השמירה על גבולות האדם אינה יודעת שוחד או פוליטיקה.
@@ -1603,7 +1577,6 @@
 
       <!-- ======================================================================
            SLIDE 07 — THE GREAT WAR (המלחמה הגדולה)
-           Dynamic reaction to the claimant's selected ally
            ====================================================================== -->
       <section class="slide" id="slide-07" aria-hidden="true">
         <div class="slide-header-visual">
@@ -1613,7 +1586,6 @@
         </div>
 
         <div class="battlefield-visual-stage">
-          <!-- Dynamic Faction Strike Banner -->
           <div class="dynamic-faction-strike-banner" id="battle-faction-banner">
             <div>
               <div style="font-size: 0.78rem; color: var(--color-aged-gold); font-family: var(--font-royal);">כוח הברית הפעיל בחזית</div>
@@ -1626,7 +1598,6 @@
             </div>
           </div>
 
-          <!-- Dual Frontlines Deck -->
           <div class="battlefield-fronts-deck">
             <div class="battle-front-card active" onclick="PresentationEngine.switchFront(0, this)">
               <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1658,9 +1629,8 @@
       </section>
 
       <!-- ======================================================================
-           SLIDE 08 — THE FUTURE OF WESTEROS [DECISION 2 DOCTRINE CARDS]
-           Visual Tarot-style Cards
-           ========================================================================== -->
+           SLIDE 08 — THE FUTURE OF WESTEROS [DECISION 2 DOCTRINES]
+           ====================================================================== -->
       <section class="slide" id="slide-08" aria-hidden="true">
         <div class="slide-header-visual">
           <div class="slide-eyebrow-tag"><bdi>Second Royal Decision</bdi></div>
@@ -1669,7 +1639,6 @@
         </div>
 
         <div class="doctrines-tarot-deck">
-          <!-- Iron Fist -->
           <div class="doctrine-tarot-card" data-doctrine="iron_fist" onclick="PresentationEngine.selectDoctrine('iron_fist', this)">
             <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 4 2.5 7.5 6 9v-3c-1.5-.5-2.5-2-2.5-3.8 0-2.2 1.8-4 4-4h5V8l4 4-4 4v-2.2h-5c-1.2 0-2.2 1-2.2 2.2 0 1 .7 1.8 1.7 2.1V21c3.5-1.5 6-5 6-9 0-5.5-4.5-10-10-10z"/></svg>
             <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה I</div>
@@ -1680,7 +1649,6 @@
             <span class="royal-wax-seal">נבחר בצו</span>
           </div>
 
-          <!-- Just Law -->
           <div class="doctrine-tarot-card" data-doctrine="just_law" onclick="PresentationEngine.selectDoctrine('just_law', this)">
             <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><path d="M12 3L2 8l10 5 10-5-10-5zm0 8.5L5.5 8 12 4.8 18.5 8 12 11.5zM4 11v6c0 3.3 3.6 6 8 6s8-2.7 8-6v-6l-8 4-8-4z"/></svg>
             <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה II</div>
@@ -1691,7 +1659,6 @@
             <span class="royal-wax-seal">נבחר בצו</span>
           </div>
 
-          <!-- Vigilant Guard -->
           <div class="doctrine-tarot-card" data-doctrine="guard" onclick="PresentationEngine.selectDoctrine('guard', this)">
             <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.2l7 3.1v4.7c0 4.5-3 8.7-7 9.8-4-1.1-7-5.3-7-9.8V6.3l7-3.1z"/></svg>
             <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה III</div>
@@ -1702,7 +1669,6 @@
             <span class="royal-wax-seal">נבחר בצו</span>
           </div>
 
-          <!-- Commerce -->
           <div class="doctrine-tarot-card" data-doctrine="commerce" onclick="PresentationEngine.selectDoctrine('commerce', this)">
             <svg class="doctrine-svg-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v10M9 9h6a2 2 0 010 4H9a2 2 0 000 4h6"/></svg>
             <div style="font-size: 0.75rem; color: var(--color-aged-gold); font-family: var(--font-royal);">דוקטרינה IV</div>
@@ -1717,7 +1683,6 @@
 
       <!-- ======================================================================
            SLIDE 09 — THE CONSEQUENCES (גורל הממלכה)
-           Circular Radial Indicators & Minimal Text
            ====================================================================== -->
       <section class="slide" id="slide-09" aria-hidden="true">
         <div class="slide-header-visual">
@@ -1727,9 +1692,7 @@
         </div>
 
         <div class="consequences-visual-stage">
-          <!-- Trio Radial Indicators -->
           <div class="gauges-trio-row">
-            <!-- Stability -->
             <div class="radial-gauge-item">
               <svg class="gauge-svg-circle" viewBox="0 0 120 120">
                 <circle class="gauge-bg-ring" cx="60" cy="60" r="54"/>
@@ -1739,7 +1702,6 @@
               <strong style="font-size: 0.95rem; color: var(--color-aged-gold);">יציבות פוליטית</strong>
             </div>
 
-            <!-- Prosperity -->
             <div class="radial-gauge-item">
               <svg class="gauge-svg-circle" viewBox="0 0 120 120">
                 <circle class="gauge-bg-ring" cx="60" cy="60" r="54"/>
@@ -1749,7 +1711,6 @@
               <strong style="font-size: 0.95rem; color: #81C784;">רווחת העם</strong>
             </div>
 
-            <!-- Defense -->
             <div class="radial-gauge-item">
               <svg class="gauge-svg-circle" viewBox="0 0 120 120">
                 <circle class="gauge-bg-ring" cx="60" cy="60" r="54"/>
@@ -1764,7 +1725,6 @@
             עידן חדש מתעורר בווסטרוז
           </div>
 
-          <!-- Optional Click-to-Reveal Maester's Report -->
           <button class="optional-details-trigger" onclick="PresentationEngine.toggleLore('drawer-s09')">
             <span>📜</span>
             <span>עיין בדוח המלומדים המלא של הסיטדל</span>
@@ -1784,7 +1744,6 @@
 
       <!-- ======================================================================
            SLIDE 10 — THE CORONATION (ההכתרה המלכותית)
-           Personalized Archetype Climax
            ====================================================================== -->
       <section class="slide" id="slide-10" aria-hidden="true">
         <div class="coronation-grand-stage">
@@ -1792,7 +1751,6 @@
           <h2 class="slide-visual-title" style="margin-bottom: 14px;">הטוען האחרון — ההכתרה</h2>
 
           <div class="coronation-royal-card">
-            <!-- Crown SVG Art -->
             <svg class="crown-art-svg" viewBox="0 0 24 24">
               <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5m14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
             </svg>
@@ -1804,7 +1762,6 @@
               שלטונך נחרת לעד בדפי ההיסטוריה של שבע הממלכות.
             </p>
 
-            <!-- Optional Click-to-Reveal Full Century Chronicle -->
             <button class="optional-details-trigger" onclick="PresentationEngine.toggleLore('drawer-s10')">
               <span>📜</span>
               <span>קרא את כרוניקת מאה השנים הבאות</span>
@@ -1855,157 +1812,345 @@
   </div>
 
   <!-- ==========================================================================
-       JAVASCRIPT APPLICATION ENGINE (PRD Section 7, 8, 9)
-       ========================================================================== */ -->
+       JAVASCRIPT APPLICATION ENGINE (PRD Section 7, 8, 9, 11, 13)
+       ========================================================================== -->
   <script>
     /* --- PYTHON_DATA_START --- */
     const GAME_DATA = {
-      houses: {
-        targaryen: { nameHe: "בית טארגאריין", mottoHe: "אש ודם", color: "#FF5722" },
-        stark:     { nameHe: "בית סטארק", mottoHe: "החורף מתקרב", color: "#00E5FF" },
-        lannister: { nameHe: "בית לאניסטר", mottoHe: "שמעו את שאגתי!", color: "#D4AF37" },
-        watch:     { nameHe: "משמר הלילה", mottoHe: "המגן על ממלכות האדם", color: "#9E9E9E" }
-      },
-      regions: [
+  "metadata": {
+    "title": "משחקי הכס — הטוען האחרון לכתר",
+    "titleEn": "Game of Thrones — The Last Claimant",
+    "version": "1.2.0",
+    "slideCount": 10
+  },
+  "houses": {
+    "targaryen": {
+      "nameHe": "בית טארגאריין",
+      "nameEn": "House Targaryen",
+      "mottoHe": "אש ודם",
+      "mottoEn": "Fire and Blood",
+      "color": "#FF5722",
+      "theme": "dragonfire"
+    },
+    "stark": {
+      "nameHe": "בית סטארק",
+      "nameEn": "House Stark",
+      "mottoHe": "החורף מתקרב",
+      "mottoEn": "Winter Is Coming",
+      "color": "#00E5FF",
+      "theme": "ice"
+    },
+    "lannister": {
+      "nameHe": "בית לאניסטר",
+      "nameEn": "House Lannister",
+      "mottoHe": "שמעו את שאגתי!",
+      "mottoEn": "Hear Me Roar!",
+      "color": "#D4AF37",
+      "theme": "gold"
+    },
+    "watch": {
+      "nameHe": "מסדר משמר הלילה",
+      "nameEn": "The Order of the Night's Watch",
+      "mottoHe": "המגן על ממלכות האדם",
+      "mottoEn": "The Shield that Guards the Realms of Men",
+      "color": "#9E9E9E",
+      "theme": "shadow"
+    }
+  },
+  "nineHouses": {
+    "stark": {
+      "nameHe": "בית סטארק",
+      "seatHe": "ווינטרפל",
+      "mottoHe": "החורף מתקרב",
+      "descHe": "כבוד, חוסן נפשי ונאמנות לשבועות הצפון.",
+      "color": "#00E5FF"
+    },
+    "targaryen": {
+      "nameHe": "בית טארגאריין",
+      "seatHe": "דרגונסטון",
+      "mottoHe": "אש ודם",
+      "descHe": "עוצמה דרקונית מוחלטת ומורשת ואליריאנית.",
+      "color": "#FF5722"
+    },
+    "lannister": {
+      "nameHe": "בית לאניסטר",
+      "seatHe": "צוק קאסטרלי",
+      "mottoHe": "שמעו את שאגתי!",
+      "descHe": "עושר בלתי נדלה, עורמה פוליטית ותחכום.",
+      "color": "#D4AF37"
+    },
+    "baratheon": {
+      "nameHe": "בית באראתיאון",
+      "seatHe": "קץ-סופה",
+      "mottoHe": "שלנו הוא הזעם",
+      "descHe": "עוצמת שדה קרב סוחפת וזעם לוחמים.",
+      "color": "#FBC02D"
+    },
+    "greyjoy": {
+      "nameHe": "בית גרייג'וי",
+      "seatHe": "פייק",
+      "mottoHe": "איננו זורעים",
+      "descHe": "שליטי איי הברזל ועוצמה ימית פראית.",
+      "color": "#FFB300"
+    },
+    "tyrell": {
+      "nameHe": "בית טיירל",
+      "seatHe": "רמות גן",
+      "mottoHe": "גדלים בעוצמה",
+      "descHe": "אבירות מפוארת, שפע חקלאי ודיפלומטיה.",
+      "color": "#4CAF50"
+    },
+    "martell": {
+      "nameHe": "בית מארטל",
+      "seatHe": "סאנספיר",
+      "mottoHe": "בלתי מורכן, בלתי מנוצח",
+      "descHe": "גאוות מדבר עקשנית ולוחמת גרילה.",
+      "color": "#E64A19"
+    },
+    "tully": {
+      "nameHe": "בית טאלי",
+      "seatHe": "נהרן",
+      "mottoHe": "משפחה, חובה, כבוד",
+      "descHe": "ביצורי מים ואסטרטגיית נהרות חכמה.",
+      "color": "#0288D1"
+    },
+    "arryn": {
+      "nameHe": "בית ארין",
+      "seatHe": "קן הנשרים",
+      "mottoHe": "גבוה ככבוד",
+      "descHe": "מבצר קן הנשרים הבלתי חדיר בין העננים.",
+      "color": "#81D4FA"
+    },
+    "watch": {
+      "nameHe": "משמר הלילה",
+      "seatHe": "טירת שחור",
+      "mottoHe": "המגן על ממלכות האדם",
+      "descHe": "שבועת נצח עצמאית על חומת הקרח.",
+      "color": "#9E9E9E"
+    }
+  },
+  "regions": [
+    {
+      "id": "north",
+      "nameHe": "הצפון הגדול — ווינטרפל",
+      "badge": "חבל ארץ // הצפון",
+      "lore": "המרחב הגדול ביותר בווסטרוז, עטוף בכפור עתיק ויערות סודיים. אנשי הצפון זוכרים שבועות.",
+      "army": "45,000 חרבות",
+      "pct": 70,
+      "color": "#00E5FF"
+    },
+    {
+      "id": "riverlands",
+      "nameHe": "ארצות הנהר — נהרן",
+      "badge": "חבל ארץ // המרכז האסטרטגי",
+      "lore": "צומת הדרכים המבוצר של הממלכה, מרושת בנהרות אדירים וטירות מים.",
+      "army": "35,000 חרבות",
+      "pct": 55,
+      "color": "#29B6F6"
+    },
+    {
+      "id": "reach",
+      "nameHe": "מישור המשגב — רמות גן",
+      "badge": "חבל ארץ // הדרום-מערב הפורה",
+      "lore": "אסם התבואה של וסטרוז, עושר חקלאי וצי פרשים מפואר.",
+      "army": "70,000 פרשים",
+      "pct": 95,
+      "color": "#66BB6A"
+    },
+    {
+      "id": "dorne",
+      "nameHe": "דורן — סאנספיר",
+      "badge": "חבל ארץ // הדרום הלוהט",
+      "lore": "מדבריות חמים ותרבות גאה שלא נכבשה מעולם בחרב.",
+      "army": "30,000 לוחמים",
+      "pct": 50,
+      "color": "#FFA726"
+    },
+    {
+      "id": "kings_landing",
+      "nameHe": "מעלה המלך — המבצר האדום",
+      "badge": "חבל ארץ // בירת הממלכה",
+      "lore": "לב הכוח הפוליטי וכס הברזל. כאן נקבעים גורלות שבע הממלכות.",
+      "army": "משמר העיר (6,000)",
+      "pct": 40,
+      "color": "#D4AF37"
+    }
+  ],
+  "quizQuestions": [
+    {
+      "id": "q1",
+      "title": "שאלה 1 מתוך 3: משבר המצור",
+      "prompt": "האויב צר על חומותיך ואנשיך רעבים. כיצד תפעל?",
+      "options": [
         {
-          nameHe: "הצפון הגדול — ווינטרפל",
-          badge: "חבל ארץ // הצפון",
-          lore: "המרחב הגדול ביותר בווסטרוז, עטוף בכפור עתיק ויערות סודיים. אנשי הצפון זוכרים שבועות.",
-          army: "45,000 חרבות",
-          pct: 70,
-          color: "#00E5FF"
+          "text": "שורף את קווי האספקה שלו באש דרקון חסרת רחמים.",
+          "faction": "targaryen"
         },
         {
-          nameHe: "ארצות הנהר — נהרן",
-          badge: "חבל ארץ // המרכז האסטרטגי",
-          lore: "צומת הדרכים המבוצר של הממלכה, מרושת בנהרות אדירים וטירות מים.",
-          army: "35,000 חרבות",
-          pct: 55,
-          color: "#29B6F6"
+          "text": "מוביל פשיטת לילה אמיצה ומגן על החלשים בגופי.",
+          "faction": "stark"
         },
         {
-          nameHe: "מישור המשגב — רמות גן",
-          badge: "חבל ארץ // הדרום-מערב הפורה",
-          lore: "אסם התבואה של וסטרוז, עושר חקלאי וצי פרשים מפואר.",
-          army: "70,000 פרשים",
-          pct: 95,
-          color: "#66BB6A"
+          "text": "משלם לשכירי חרב שיתקפו את עורף האויב בזהב.",
+          "faction": "lannister"
         },
         {
-          nameHe: "דורן — סאנספיר",
-          badge: "חבל ארץ // הדרום הלוהט",
-          lore: "מדבריות חמים ותרבות גאה שלא נכבשה מעולם בחרב.",
-          army: "30,000 לוחמים",
-          pct: 50,
-          color: "#FFA726"
-        },
-        {
-          nameHe: "מעלה המלך — המבצר האדום",
-          badge: "חבל ארץ // בירת הממלכה",
-          lore: "לב הכוח הפוליטי וכס הברזל. כאן נקבעים גורלות שבע הממלכות.",
-          army: "משמר העיר (6,000)",
-          pct: 40,
-          color: "#D4AF37"
+          "text": "מחזיק מעמד בחומות ומקריב הכול למען המשמר.",
+          "faction": "watch"
         }
-      ],
-      nineHouses: {
-        stark:     { motto: "החורף מתקרב", desc: "כבוד, חוסן ונאמנות לשבועות הצפון." },
-        targaryen: { motto: "אש ודם", desc: "עוצמה דרקונית מוחלטת ומורשת ואליריאנית." },
-        lannister: { motto: "שמעו את שאגתי!", desc: "עושר בלתי נדלה, עורמה פוליטית ותחכום." },
-        baratheon: { motto: "שלנו הוא הזעם", desc: "עוצמת שדה קרב סוחפת וזעם לוחמים." },
-        greyjoy:   { motto: "איננו זורעים", desc: "שליטי איי הברזל ועוצמה ימית פראית." },
-        tyrell:    { motto: "גדלים בעוצמה", desc: "אבירות מפוארת, שפע חקלאי ודיפלומטיה." },
-        martell:   { motto: "בלתי מורכן, בלתי מנוצח", desc: "גאוות מדבר עקשנית ולוחמת גרילה." },
-        tully:     { motto: "משפחה, חובה, כבוד", desc: "ביצורי מים ואסטרטגיית נהרות חכמה." },
-        arryn:     { motto: "גבוה ככבוד", desc: "מבצר קן הנשרים הבלתי חדיר בין העננים." },
-        watch:     { motto: "המגן על ממלכות האדם", desc: "שבועת נצח עצמאית על חומת הקרח." }
-      },
-      quizQuestions: [
+      ]
+    },
+    {
+      "id": "q2",
+      "title": "שאלה 2 מתוך 3: צדק מול תועלת",
+      "prompt": "לורד בעל צבא בגד בשבועה, אך חייליו נחוצים לקרב. מה דינו?",
+      "options": [
         {
-          title: "שאלה 1 מתוך 3: משבר המצור",
-          prompt: "האויב צר על חומותיך ואנשיך רעבים. כיצד תפעל?",
-          options: [
-            { text: "שורף את קווי האספקה שלו באש דרקון חסרת רחמים.", faction: "targaryen" },
-            { text: "מוביל פשיטת לילה אמיצה ומגן על החלשים בגופי.", faction: "stark" },
-            { text: "משלם לשכירי חרב שיתקפו את עורף האויב בזהב.", faction: "lannister" },
-            { text: "מחזיק מעמד בחומות ומקריב הכול למען המשמר.", faction: "watch" }
-          ]
+          "text": "כורת את ראשו מיד; הכבוד והדין קודמים לכל תועלת.",
+          "faction": "stark"
         },
         {
-          title: "שאלה 2 מתוך 3: צדק מול תועלת",
-          prompt: "לורד בעל צבא בגד בשבועה, אך חייליו נחוצים לקרב. מה דינו?",
-          options: [
-            { text: "כורת את ראשו מיד; הכבוד והדין קודמים לכל תועלת.", faction: "stark" },
-            { text: "מאיים עליו בדרקונים ומאלץ אותו להישבע מחדש בדם.", faction: "targaryen" },
-            { text: "מוחל לו תמורת מס זהב כבד ובני ערובה להבטחת ציות.", faction: "lannister" },
-            { text: "שולח אותו לגלות נצחית אל החומה, ללא תואר ואדמה.", faction: "watch" }
-          ]
+          "text": "מאיים עליו בדרקונים ומאלץ אותו להישבע מחדש בדם.",
+          "faction": "targaryen"
         },
         {
-          title: "שאלה 3 מתוך 3: ההקרבה העליונה",
-          prompt: "אימה עתיקה מתעוררת בצפון הקפוא. במה תשקיע את כוחותיך?",
-          options: [
-            { text: "מגייס את כל מסדרי הממלכה לביצור החומה; האיום קודם לכתר.", faction: "watch" },
-            { text: "רותם את אש הדרקונים להשמדת האויב העל-טבעי.", faction: "targaryen" },
-            { text: "מאחד את צבאות הצפון במסדר כבוד ומגן בחרב פלדה.", faction: "stark" },
-            { text: "מממן קווי אספקה ומבצרי אבן עורפיים בעזרת אוצר הממלכה.", faction: "lannister" }
-          ]
+          "text": "מוחל לו תמורת מס זהב כבד ובני ערובה להבטחת ציות.",
+          "faction": "lannister"
+        },
+        {
+          "text": "שולח אותו לגלות נצחית אל החומה, ללא תואר ואדמה.",
+          "faction": "watch"
         }
-      ],
-      archetypes: {
-        "ARC-01": {
-          titleHe: "שליט הדרקונים הנצחי",
-          titleEn: "The Eternal Dragon Sovereign",
-          summary: "שלום של מורא מוחלט. שבע הממלכות מאוחדות תחת צל כנפי הדרקונים.",
-          chronicle: "שליטה מוחלטת בכוח האש. הממלכה מאוחדת תחת מורא כבד, מרידות מדוכאות באיבן, ושבע הממלכות חוות שלום של צייתנות מוחלטת. צללי הדרקונים בשמי מעלה המלך מהווים תזכורת תמידית לכך ששום התקוממות לא תעבור ללא עונש צורב."
+      ]
+    },
+    {
+      "id": "q3",
+      "title": "שאלה 3 מתוך 3: ההקרבה העליונה",
+      "prompt": "אימה עתיקה מתעוררת בצפון הקפוא. במה תשקיע את כוחותיך?",
+      "options": [
+        {
+          "text": "מגייס את כל מסדרי הממלכה לביצור החומה; האיום קודם לכתר.",
+          "faction": "watch"
         },
-        "ARC-02": {
-          titleHe: "המלך החוקק של הצפון",
-          titleEn: "The Lawgiver of the North",
-          summary: "עידן של צדק ויושרה שבו החוק שווה מאיכר ועד אחרון הלורדים.",
-          chronicle: "עידן של צדק, יושרה וסדר חוקתי חדש. חוקי הממלכה שווים לכל נפש, השחיתות נעקרת ממוסדות השלטון, ושמך נזכר לדורות כמגן החלשים וההוגן במלכי וסטרוז."
+        {
+          "text": "רותם את אש הדרקונים להשמדת האויב העל-טבעי.",
+          "faction": "targaryen"
         },
-        "ARC-03": {
-          titleHe: "אדון הצללים והזהב",
-          titleEn: "The Lord of Shadows and Gold",
-          summary: "כס הברזל הופך למרכז הפיננסי של העולם הידוע.",
-          chronicle: "כס הברזל הופך למרכז הפיננסי והמסחרי של העולם הידוע. בריתות נרכשות בזהב, אויבים מנוטרלים בחשאי עוד לפני שהניפו חרב, ושגשוג כלכלי חסר תקדים שוטף את ערי הנמל."
+        {
+          "text": "מאחד את צבאות הצפון במסדר כבוד ומגן בחרב פלדה.",
+          "faction": "stark"
         },
-        "ARC-04": {
-          titleHe: "מגן האנושות הנשגב",
-          titleEn: "The Sovereign Shield of the Living",
-          summary: "כל עוצמת הממלכה מופנית לביצור החומה והדפת החשכה לתמיד.",
-          chronicle: "כל עוצמת הממלכה מופנית להגנת החיים מפני החשכה. החומה מבוצרת במבצרי גרניט חדשים, משמר הלילה הופך לצבא העילית של הממלכה, והחשכה שמעבר לגבול נהדפת לתמיד."
-        },
-        "ARC-05": {
-          titleHe: "הבורר הצודק של שבע הממלכות",
-          titleEn: "The Just Arbitrator",
-          summary: "מועצה עליונה משותפת המאזנת בין אצולה לזכויות העם.",
-          chronicle: "הקמת מועצה עליונה משותפת לכל בתי האב הגדולים. שלטון מאוזן הפורק מתיחויות מעמדיות, מעגן זכויות אזרחיות לכל שכבות העם, ומבטיח כי שום בית יחיד לא יוכל שוב לרדות בממלכה כולה."
-        },
-        "ARC-06": {
-          titleHe: "רודן הברזל והאפר",
-          titleEn: "The Ashen Tyrant / Lord of the Bastion",
-          summary: "סדר נוקשה הנאכף בחומות ברזל ובגרדומים בכיכרות.",
-          chronicle: "סדר נוקשה ואכזרי המושג בחומות ברזל ובגרדומים בכיכרות העיר. הפחד שזרעת מגן על וסטרוז מפני כאוס ואיומים חיצוניים, אך המחיר ששולם הוא שממה תרבותית ושתיקה רועמת בצללים."
-        },
-        "ARC-07": {
-          titleHe: "שומר הסודות והכשף",
-          titleEn: "The Mystic Warden",
-          summary: "תחיית הקסם הואליריאני ולחשי מגן קדומים להגנת הממלכה.",
-          chronicle: "תחיית הקסם העתיק והידע הואליריאני ברחבי הממלכה. לחשי מגן, פלדה ואליריאנית ונבואות קדומות חוברים יחד לשמירה על שלום וסטרוז מפני כוחות קוסמיים ואיומים שמעבר להבנת בני התמותה."
-        },
-        "ARC-08": {
-          titleHe: "משקם ההריסות הפרגמטי",
-          titleEn: "The Pragmatic Restorer",
-          summary: "בנייה מחדש סבלנית של הערים החרבות ופיוס בין הבתים.",
-          chronicle: "בנייה מחדש סבלנית של הערים החרבות, חידוש קווי הסחר העולמיים עם הערים החופשיות באסוס, ופיוס הדרגתי ועקבי בין כל הבתים המסוכסכים."
+        {
+          "text": "מממן קווי אספקה ומבצרי אבן עורפיים בעזרת אוצר הממלכה.",
+          "faction": "lannister"
         }
-      }
-    };
+      ]
+    }
+  ],
+  "doctrines": {
+    "iron_fist": {
+      "titleHe": "אש וברזל",
+      "titleEn": "Iron Fist & Absolute Order",
+      "descHe": "שלטון ריכוזי, דיכוי מרידות ומשמעת ברזל כערובה לשלום."
+    },
+    "just_law": {
+      "titleHe": "צדק ורפורמה",
+      "titleEn": "Just Law & Realm Reform",
+      "descHe": "פירוק מוקדי כוח ישנים ומשפט הוגן לכל אזרח בממלכה."
+    },
+    "guard": {
+      "titleHe": "מגן הגבולות",
+      "titleEn": "Vigilant Guardian & Border Shield",
+      "descHe": "הפניית כלל משאבי הממלכה לביצור החומה מפני איומי חורף."
+    },
+    "commerce": {
+      "titleHe": "שגשוג ומסחר",
+      "titleEn": "Pragmatic Commerce & Diplomacy",
+      "descHe": "פתיחת נתיבי סחר עם אסוס ויצירת שלום דרך תלות כלכלית."
+    }
+  },
+  "decisionMatrix": {
+    "targaryen": {
+      "iron_fist": "ARC-01",
+      "just_law": "ARC-08",
+      "guard": "ARC-07",
+      "commerce": "ARC-08"
+    },
+    "stark": {
+      "iron_fist": "ARC-06",
+      "just_law": "ARC-02",
+      "guard": "ARC-04",
+      "commerce": "ARC-05"
+    },
+    "lannister": {
+      "iron_fist": "ARC-06",
+      "just_law": "ARC-05",
+      "guard": "ARC-08",
+      "commerce": "ARC-03"
+    },
+    "watch": {
+      "iron_fist": "ARC-06",
+      "just_law": "ARC-04",
+      "guard": "ARC-04",
+      "commerce": "ARC-08"
+    }
+  },
+  "archetypes": {
+    "ARC-01": {
+      "titleHe": "שליט הדרקונים הנצחי",
+      "titleEn": "The Eternal Dragon Sovereign",
+      "summary": "שלום של מורא מוחלט. שבע הממלכות מאוחדות תחת צל כנפי הדרקונים.",
+      "chronicle": "שליטה מוחלטת בכוח האש. הממלכה מאוחדת תחת מורא כבד, מרידות מדוכאות באיבן, ושבע הממלכות חוות שלום של צייתנות מוחלטת. צללי הדרקונים בשמי מעלה המלך מהווים תזכורת תמידית לכך ששום התקוממות לא תעבור ללא עונש צורב."
+    },
+    "ARC-02": {
+      "titleHe": "המלך החוקק של הצפון",
+      "titleEn": "The Lawgiver of the North",
+      "summary": "עידן של צדק ויושרה שבו החוק שווה מאיכר ועד אחרון הלורדים.",
+      "chronicle": "עידן של צדק, יושרה וסדר חוקתי חדש. חוקי הממלכה שווים לכל נפש, השחיתות נעקרת ממוסדות השלטון, ושמך נזכר לדורות כמגן החלשים וההוגן במלכי וסטרוז. תחת שלטונך, הכבוד והאמת הפכו לעמודי התווך של החברה."
+    },
+    "ARC-03": {
+      "titleHe": "אדון הצללים והזהב",
+      "titleEn": "The Lord of Shadows and Gold",
+      "summary": "כס הברזל הופך למרכז הפיננסי של העולם הידוע.",
+      "chronicle": "כס הברזל הופך למרכז הפיננסי והמסחרי של העולם הידוע. בריתות נרכשות בזהב, אויבים מנוטרלים בחשאי עוד לפני שהניפו חרב, ושגשוג כלכלי חסר תקדים שוטף את ערי הנמל. הוכחת כי כוחו של המטבע גדול מכל חרב."
+    },
+    "ARC-04": {
+      "titleHe": "מגן האנושות הנשגב",
+      "titleEn": "The Sovereign Shield of the Living",
+      "summary": "כל עוצמת הממלכה מופנית לביצור החומה והדפת החשכה לתמיד.",
+      "chronicle": "כל עוצמת הממלכה מופנית להגנת החיים מפני החשכה. החומה מבוצרת במבצרי גרניט חדשים, משמר הלילה הופך לצבא העילית של הממלכה, והחשכה שמעבר לגבול נהדפת לתמיד. שלטונך ייזכר כעידן שבו האנושות ניצחה את הכליה."
+    },
+    "ARC-05": {
+      "titleHe": "הבורר הצודק של שבע הממלכות",
+      "titleEn": "The Just Arbitrator",
+      "summary": "מועצה עליונה משותפת המאזנת בין אצולה לזכויות העם.",
+      "chronicle": "הקמת מועצה עליונה משותפת לכל בתי האב הגדולים. שלטון מאוזן הפורק מתיחויות מעמדיות, מעגן זכויות אזרחיות לכל שכבות העם, ומבטיח כי שום בית יחיד לא יוכל שוב לרדות בממלכה כולה."
+    },
+    "ARC-06": {
+      "titleHe": "רודן הברזל והאפר",
+      "titleEn": "The Ashen Tyrant / Lord of the Bastion",
+      "summary": "סדר נוקשה הנאכף בחומות ברזל ובגרדומים בכיכרות.",
+      "chronicle": "סדר נוקשה ואכזרי המושג בחומות ברזל ובגרדומים בכיכרות העיר. הפחד שזרעת מגן על וסטרוז מפני כאוס ואיומים חיצוניים, אך המחיר ששולם הוא שממה תרבותית ושתיקה רועמת בצללים."
+    },
+    "ARC-07": {
+      "titleHe": "שומר הסודות והכשף",
+      "titleEn": "The Mystic Warden",
+      "summary": "תחיית הקסם הואליריאני ולחשי מגן קדומים להגנת הממלכה.",
+      "chronicle": "תחיית הקסם העתיק והידע הואליריאני ברחבי הממלכה. לחשי מגן, פלדה ואליריאנית ונבואות קדומות חוברים יחד לשמירה על שלום וסטרוז מפני כוחות קוסמיים ואיומים שמעבר להבנת בני התמותה."
+    },
+    "ARC-08": {
+      "titleHe": "משקם ההריסות הפרגמטי",
+      "titleEn": "The Pragmatic Restorer",
+      "summary": "בנייה מחדש סבלנית של הערים החרבות ופיוס בין הבתים.",
+      "chronicle": "בנייה מחדש סבלנית של הערים החרבות, חידוש קווי הסחר העולמיים עם הערים החופשיות באסוס, ופיוס הדרגתי ועקבי בין כל הבתים המסוכסכים. שלטונך הניח את היסודות לריפוי פצעי המלחמה."
+    }
+  }
+};
     /* --- PYTHON_DATA_END --- */
 
-    /* Centralized State Management */
+    /* ==========================================================================
+       CENTRALIZED APPLICATION STATE
+       ========================================================================== */
     const AppState = {
       currentSlide: 1,
       totalSlides: 10,
@@ -2019,14 +2164,464 @@
       frostWiped: false
     };
 
-    /* Presentation Controller */
+    /* ==========================================================================
+       THREE.JS WEBGL 3D RENDERING ENGINE (PRD Section 11 & Part 1 Requirement)
+       ========================================================================== */
+    const ThreeSceneManager = {
+      renderer: null,
+      scene: null,
+      camera: null,
+      canvas: null,
+      groups: {},
+      lights: {},
+      particleSystems: {},
+      isWebGLAvailable: true,
+      cameraTargets: {
+        1:  { x: 0, y: 0, z: 42, rotX: 0 },
+        2:  { x: 0, y: 3, z: 46, rotX: -0.05 },
+        3:  { x: 0, y: 0, z: 40, rotX: 0 },
+        4:  { x: 0, y: -2, z: 36, rotX: 0.08 },
+        5:  { x: 0, y: 2, z: 44, rotX: -0.04 },
+        6:  { x: 0, y: 0, z: 40, rotX: 0 },
+        7:  { x: 0, y: -1, z: 38, rotX: 0.05 },
+        8:  { x: 0, y: 0, z: 40, rotX: 0 },
+        9:  { x: 0, y: 1, z: 36, rotX: -0.06 },
+        10: { x: 0, y: 0, z: 38, rotX: 0 }
+      },
+
+      init() {
+        this.canvas = document.getElementById('bg-canvas');
+        if (!this.canvas) return;
+
+        // WebGL capability check
+        if (typeof THREE === 'undefined') {
+          console.warn("Three.js not found. Using procedural 2D canvas fallback.");
+          this.init2DFallback();
+          return;
+        }
+
+        try {
+          this.renderer = new THREE.WebGLRenderer({
+            canvas: this.canvas,
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance"
+          });
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+          this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          this.renderer.shadowMap.enabled = true;
+        } catch (e) {
+          console.warn("WebGL initialization failed:", e);
+          this.init2DFallback();
+          return;
+        }
+
+        this.scene = new THREE.Scene();
+        this.scene.fog = new THREE.FogExp2(0x07070a, 0.018);
+
+        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.set(0, 0, 42);
+
+        this.setupLighting();
+        this.buildSlide3DGroups();
+        this.bindResize();
+        this.updateVisibleLayers(1);
+
+        this.animate();
+      },
+
+      setupLighting() {
+        const ambient = new THREE.AmbientLight(0x22222a, 1.2);
+        this.scene.add(ambient);
+
+        // Slide 1 & 10 Royal Golden Spotlight
+        const royalSpot = new THREE.SpotLight(0xD4AF37, 3.5, 90, Math.PI / 4, 0.4);
+        royalSpot.position.set(0, 30, 20);
+        this.scene.add(royalSpot);
+        this.lights.royalSpot = royalSpot;
+
+        // Dynamic Elemental Point Light (Fire / Ice / War)
+        const elementLight = new THREE.PointLight(0xFF5722, 2.5, 70);
+        elementLight.position.set(0, 0, 10);
+        this.scene.add(elementLight);
+        this.lights.elementLight = elementLight;
+      },
+
+      buildSlide3DGroups() {
+        // --- Slide 1: 3D Iron Throne Sword Spires & Golden Dust ---
+        const g1 = new THREE.Group();
+        const swordMat = new THREE.MeshStandardMaterial({
+          color: 0xD4AF37,
+          metalness: 0.85,
+          roughness: 0.28
+        });
+        const bladeGeo = new THREE.CylinderGeometry(0.12, 0.45, 16, 6);
+        for (let i = 0; i < 22; i++) {
+          const blade = new THREE.Mesh(bladeGeo, swordMat);
+          const angle = (i - 10.5) * 0.12;
+          blade.position.set(Math.sin(angle) * 14, Math.cos(angle) * 8 - 4, -5 - Math.abs(i - 10.5) * 0.4);
+          blade.rotation.z = -angle * 0.9;
+          g1.add(blade);
+        }
+        // Floating gold motes
+        const motesGeo = new THREE.BufferGeometry();
+        const motesPos = [];
+        for (let i = 0; i < 250; i++) {
+          motesPos.push((Math.random() - 0.5) * 60, (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 40);
+        }
+        motesGeo.setAttribute('position', new THREE.Float32BufferAttribute(motesPos, 3));
+        const motesMat = new THREE.PointsMaterial({ color: 0xFFD700, size: 0.65, transparent: true, opacity: 0.7 });
+        const motes = new THREE.Points(motesGeo, motesMat);
+        g1.add(motes);
+        this.particleSystems.throneMotes = motes;
+        this.groups[1] = g1;
+        this.scene.add(g1);
+
+        // --- Slide 2: Tactical Map Depth Field ---
+        const g2 = new THREE.Group();
+        const gridGeo = new THREE.BufferGeometry();
+        const gridPos = [];
+        for (let i = 0; i < 300; i++) {
+          gridPos.push((Math.random() - 0.5) * 70, (Math.random() - 0.5) * 60, (Math.random() - 0.5) * 40 - 5);
+        }
+        gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(gridPos, 3));
+        const gridMat = new THREE.PointsMaterial({ color: 0x4FC3F7, size: 0.5, transparent: true, opacity: 0.6 });
+        const mapParticles = new THREE.Points(gridGeo, gridMat);
+        g2.add(mapParticles);
+        this.groups[2] = g2;
+        this.scene.add(g2);
+
+        // --- Slide 3: 3D Shield Constellation ---
+        const g3 = new THREE.Group();
+        const ringGeo = new THREE.TorusGeometry(18, 0.25, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xD4AF37, transparent: true, opacity: 0.35 });
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        g3.add(ring);
+        this.groups[3] = g3;
+        this.scene.add(g3);
+
+        // --- Slide 4: 3D Swirling Dragonfire Vortex ---
+        const g4 = new THREE.Group();
+        const fireCount = 1200;
+        const fireGeo = new THREE.BufferGeometry();
+        const firePos = new Float32Array(fireCount * 3);
+        const fireVels = [];
+        for (let i = 0; i < fireCount; i++) {
+          const theta = Math.random() * Math.PI * 2;
+          const r = Math.random() * 14 + 1;
+          firePos[i * 3] = Math.cos(theta) * r;
+          firePos[i * 3 + 1] = (Math.random() - 0.5) * 35;
+          firePos[i * 3 + 2] = Math.sin(theta) * r;
+          fireVels.push({ theta, r, speedY: Math.random() * 0.3 + 0.15, rotSpeed: Math.random() * 0.04 + 0.02 });
+        }
+        fireGeo.setAttribute('position', new THREE.BufferAttribute(firePos, 3));
+        const fireMat = new THREE.PointsMaterial({
+          color: 0xFF5722,
+          size: 0.9,
+          transparent: true,
+          opacity: 0.85,
+          blending: THREE.AdditiveBlending
+        });
+        const fireSystem = new THREE.Points(fireGeo, fireMat);
+        g4.add(fireSystem);
+        this.particleSystems.dragonfire = { mesh: fireSystem, vels: fireVels };
+        this.groups[4] = g4;
+        this.scene.add(g4);
+
+        // --- Slide 5: 3D Towering Ice Wall & Blizzard ---
+        const g5 = new THREE.Group();
+        const wallGeo = new THREE.BoxGeometry(45, 34, 4);
+        const wallMat = new THREE.MeshStandardMaterial({
+          color: 0x80D8FF,
+          transparent: true,
+          opacity: 0.45,
+          roughness: 0.1,
+          metalness: 0.2
+        });
+        const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+        wallMesh.position.set(0, 0, -8);
+        g5.add(wallMesh);
+
+        // Blizzard snow particles
+        const snowCount = 1200;
+        const snowGeo = new THREE.BufferGeometry();
+        const snowPos = new Float32Array(snowCount * 3);
+        for (let i = 0; i < snowCount; i++) {
+          snowPos[i * 3] = (Math.random() - 0.5) * 80;
+          snowPos[i * 3 + 1] = (Math.random() - 0.5) * 60;
+          snowPos[i * 3 + 2] = (Math.random() - 0.5) * 45;
+        }
+        snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos, 3));
+        const snowMat = new THREE.PointsMaterial({ color: 0x00E5FF, size: 0.7, transparent: true, opacity: 0.75 });
+        const snowSystem = new THREE.Points(snowGeo, snowMat);
+        g5.add(snowSystem);
+        this.particleSystems.blizzard = snowSystem;
+        this.groups[5] = g5;
+        this.scene.add(g5);
+
+        // --- Slide 6: Chamber Light Shafts ---
+        const g6 = new THREE.Group();
+        const shaftMat = new THREE.MeshBasicMaterial({ color: 0xD4AF37, transparent: true, opacity: 0.15 });
+        for (let i = 0; i < 4; i++) {
+          const cone = new THREE.Mesh(new THREE.ConeGeometry(6, 40, 16), shaftMat);
+          cone.position.set((i - 1.5) * 14, 10, -5);
+          cone.rotation.x = Math.PI;
+          g6.add(cone);
+        }
+        this.groups[6] = g6;
+        this.scene.add(g6);
+
+        // --- Slide 7: 3D Great War (Fire vs Ice Collision) ---
+        const g7 = new THREE.Group();
+        const warCount = 1000;
+        const warGeo = new THREE.BufferGeometry();
+        const warPos = new Float32Array(warCount * 3);
+        const warColors = new Float32Array(warCount * 3);
+        for (let i = 0; i < warCount; i++) {
+          const isFire = i % 2 === 0;
+          warPos[i * 3] = isFire ? Math.random() * 30 : -Math.random() * 30;
+          warPos[i * 3 + 1] = (Math.random() - 0.5) * 40;
+          warPos[i * 3 + 2] = (Math.random() - 0.5) * 30;
+          if (isFire) {
+            warColors[i * 3] = 1.0; warColors[i * 3 + 1] = 0.35; warColors[i * 3 + 2] = 0.1;
+          } else {
+            warColors[i * 3] = 0.0; warColors[i * 3 + 1] = 0.9; warColors[i * 3 + 2] = 1.0;
+          }
+        }
+        warGeo.setAttribute('position', new THREE.BufferAttribute(warPos, 3));
+        warGeo.setAttribute('color', new THREE.BufferAttribute(warColors, 3));
+        const warMat = new THREE.PointsMaterial({ size: 0.85, vertexColors: true, transparent: true, opacity: 0.8 });
+        const warSystem = new THREE.Points(warGeo, warMat);
+        g7.add(warSystem);
+        this.particleSystems.greatWar = warSystem;
+        this.groups[7] = g7;
+        this.scene.add(g7);
+
+        // --- Slide 8: Ruined Keep Mist ---
+        const g8 = new THREE.Group();
+        const mistGeo = new THREE.BufferGeometry();
+        const mistPos = [];
+        for (let i = 0; i < 300; i++) {
+          mistPos.push((Math.random() - 0.5) * 70, Math.random() * 20 - 15, (Math.random() - 0.5) * 40);
+        }
+        mistGeo.setAttribute('position', new THREE.Float32BufferAttribute(mistPos, 3));
+        const mistMat = new THREE.PointsMaterial({ color: 0x9E9E9E, size: 0.7, transparent: true, opacity: 0.5 });
+        g8.add(new THREE.Points(mistGeo, mistMat));
+        this.groups[8] = g8;
+        this.scene.add(g8);
+
+        // --- Slide 9: 3D Concentric Celestial Astrolabe ---
+        const g9 = new THREE.Group();
+        const astMat = new THREE.MeshStandardMaterial({ color: 0xD4AF37, metalness: 0.9, roughness: 0.25 });
+        const r1 = new THREE.Mesh(new THREE.TorusGeometry(12, 0.35, 16, 80), astMat);
+        const r2 = new THREE.Mesh(new THREE.TorusGeometry(8.5, 0.3, 16, 70), astMat);
+        const r3 = new THREE.Mesh(new THREE.TorusGeometry(5.2, 0.25, 16, 60), astMat);
+        g9.add(r1); g9.add(r2); g9.add(r3);
+        this.particleSystems.astrolabeRings = { r1, r2, r3 };
+        this.groups[9] = g9;
+        this.scene.add(g9);
+
+        // --- Slide 10: 3D Royal Crown & Golden Celebration Rain ---
+        const g10 = new THREE.Group();
+        const crownBase = new THREE.Mesh(
+          new THREE.CylinderGeometry(6, 6.5, 3.5, 8, 1, true),
+          new THREE.MeshStandardMaterial({ color: 0xFFD700, metalness: 0.9, roughness: 0.2 })
+        );
+        crownBase.position.set(0, 4, -4);
+        g10.add(crownBase);
+
+        const goldRainCount = 700;
+        const goldGeo = new THREE.BufferGeometry();
+        const goldPos = new Float32Array(goldRainCount * 3);
+        for (let i = 0; i < goldRainCount; i++) {
+          goldPos[i * 3] = (Math.random() - 0.5) * 70;
+          goldPos[i * 3 + 1] = Math.random() * 50;
+          goldPos[i * 3 + 2] = (Math.random() - 0.5) * 40;
+        }
+        goldGeo.setAttribute('position', new THREE.BufferAttribute(goldPos, 3));
+        const goldMat = new THREE.PointsMaterial({
+          color: 0xFFD700,
+          size: 0.8,
+          transparent: true,
+          opacity: 0.85,
+          blending: THREE.AdditiveBlending
+        });
+        const goldRain = new THREE.Points(goldGeo, goldMat);
+        g10.add(goldRain);
+        this.particleSystems.goldRain = goldRain;
+        this.groups[10] = g10;
+        this.scene.add(g10);
+      },
+
+      updateVisibleLayers(activeSlide) {
+        this.activeSlide = activeSlide;
+        // Spatial & Performance Culling (PRD 11.1)
+        for (let i = 1; i <= 10; i++) {
+          if (this.groups[i]) {
+            this.groups[i].visible = (i === activeSlide || Math.abs(i - activeSlide) <= 1);
+          }
+        }
+
+        // Adjust Elemental Lighting color per slide context
+        if (this.lights.elementLight) {
+          if (activeSlide === 4) {
+            this.lights.elementLight.color.setHex(0xFF5722);
+            this.lights.elementLight.intensity = (AppState.flameIntensity / 25);
+          } else if (activeSlide === 5) {
+            this.lights.elementLight.color.setHex(0x00E5FF);
+            this.lights.elementLight.intensity = 2.5;
+          } else if (activeSlide === 7) {
+            const fColor = { targaryen: 0xFF5722, stark: 0x00E5FF, lannister: 0xD4AF37, watch: 0x9E9E9E };
+            this.lights.elementLight.color.setHex(fColor[AppState.decision1_faction] || 0xFF5722);
+            this.lights.elementLight.intensity = 3.0;
+          } else if (activeSlide === 10) {
+            this.lights.elementLight.color.setHex(0xFFD700);
+            this.lights.elementLight.intensity = 3.5;
+          } else {
+            this.lights.elementLight.color.setHex(0xD4AF37);
+            this.lights.elementLight.intensity = 1.2;
+          }
+        }
+      },
+
+      bindResize() {
+        window.addEventListener('resize', () => {
+          if (!this.renderer || !this.camera) return;
+          this.camera.aspect = window.innerWidth / window.innerHeight;
+          this.camera.updateProjectionMatrix();
+          this.renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+      },
+
+      animate() {
+        requestAnimationFrame(() => this.animate());
+
+        // Camera Lerp Tween
+        const target = this.cameraTargets[this.activeSlide] || { x: 0, y: 0, z: 42, rotX: 0 };
+        this.camera.position.x += (target.x - this.camera.position.x) * 0.05;
+        this.camera.position.y += (target.y - this.camera.position.y) * 0.05;
+        this.camera.position.z += (target.z - this.camera.position.z) * 0.05;
+        this.camera.rotation.x += (target.rotX - this.camera.rotation.x) * 0.05;
+
+        // --- Continuous Particle Updates (PRD 11.2) ---
+        const time = Date.now() * 0.001;
+
+        // Slide 1 motes
+        if (this.particleSystems.throneMotes && this.groups[1].visible) {
+          this.particleSystems.throneMotes.rotation.y += 0.0015;
+        }
+
+        // Slide 4 Dragonfire Vortex
+        if (this.particleSystems.dragonfire && this.groups[4].visible) {
+          const sys = this.particleSystems.dragonfire.mesh;
+          const pos = sys.geometry.attributes.position.array;
+          const vels = this.particleSystems.dragonfire.vels;
+          const speedFactor = (AppState.flameIntensity / 50);
+
+          for (let i = 0; i < vels.length; i++) {
+            vels[i].theta += vels[i].rotSpeed * speedFactor;
+            pos[i * 3 + 1] += vels[i].speedY * speedFactor;
+            pos[i * 3] = Math.cos(vels[i].theta) * vels[i].r;
+            pos[i * 3 + 2] = Math.sin(vels[i].theta) * vels[i].r;
+
+            if (pos[i * 3 + 1] > 20) {
+              pos[i * 3 + 1] = -15;
+            }
+          }
+          sys.geometry.attributes.position.needsUpdate = true;
+          // Flickering flame light
+          if (this.lights.elementLight) {
+            this.lights.elementLight.intensity = (AppState.flameIntensity / 30) + Math.sin(time * 12) * 0.4;
+          }
+        }
+
+        // Slide 5 Blizzard
+        if (this.particleSystems.blizzard && this.groups[5].visible) {
+          const pos = this.particleSystems.blizzard.geometry.attributes.position.array;
+          for (let i = 0; i < pos.length; i += 3) {
+            pos[i] -= 0.6; // Wind left
+            pos[i + 1] -= 0.15;
+            if (pos[i] < -40) pos[i] = 40;
+            if (pos[i + 1] < -30) pos[i + 1] = 30;
+          }
+          this.particleSystems.blizzard.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // Slide 7 Great War
+        if (this.particleSystems.greatWar && this.groups[7].visible) {
+          this.particleSystems.greatWar.rotation.y += 0.003;
+        }
+
+        // Slide 9 Astrolabe Rings
+        if (this.particleSystems.astrolabeRings && this.groups[9].visible) {
+          const { r1, r2, r3 } = this.particleSystems.astrolabeRings;
+          r1.rotation.x += 0.01;
+          r1.rotation.y += 0.008;
+          r2.rotation.y += 0.012;
+          r2.rotation.z += 0.01;
+          r3.rotation.x -= 0.015;
+          r3.rotation.z += 0.007;
+        }
+
+        // Slide 10 Golden Rain & Crown
+        if (this.particleSystems.goldRain && this.groups[10].visible) {
+          const pos = this.particleSystems.goldRain.geometry.attributes.position.array;
+          for (let i = 1; i < pos.length; i += 3) {
+            pos[i] -= 0.25;
+            if (pos[i] < -20) pos[i] = 30;
+          }
+          this.particleSystems.goldRain.geometry.attributes.position.needsUpdate = true;
+          if (this.groups[10].children[0]) {
+            this.groups[10].children[0].rotation.y += 0.012;
+          }
+        }
+
+        this.renderer.render(this.scene, this.camera);
+      },
+
+      init2DFallback() {
+        const ctx = this.canvas.getContext('2d');
+        let w = this.canvas.width = window.innerWidth;
+        let h = this.canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => {
+          w = this.canvas.width = window.innerWidth;
+          h = this.canvas.height = window.innerHeight;
+        });
+        const particles = [];
+        for (let i = 0; i < 90; i++) {
+          particles.push({
+            x: Math.random() * w, y: Math.random() * h,
+            r: Math.random() * 2 + 0.8,
+            vy: -Math.random() * 1.2 - 0.2,
+            a: Math.random() * 0.7 + 0.3
+          });
+        }
+        function draw() {
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = 'rgba(212, 175, 55, 0.6)';
+          for (const p of particles) {
+            p.y += p.vy;
+            if (p.y < 0) p.y = h;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      }
+    };
+
+    /* ==========================================================================
+       PRESENTATION CONTROLLER
+       ========================================================================== */
     const PresentationEngine = {
       init() {
         this.renderDots();
         this.renderQuizStep(0);
         this.bindEvents();
         this.updateSlideUI();
-        initParticleCanvas();
+        ThreeSceneManager.init();
       },
 
       renderDots() {
@@ -2042,18 +2637,14 @@
       },
 
       bindEvents() {
-        // Keyboard navigation (FR-NAV-02)
         window.addEventListener('keydown', (e) => {
           if (AppState.isTransitioning) return;
           switch (e.key) {
-            case 'ArrowLeft': // Forward in Hebrew RTL
-            case ' ':
-            case 'PageDown':
+            case 'ArrowLeft': case ' ': case 'PageDown':
               e.preventDefault();
               this.nextSlide();
               break;
-            case 'ArrowRight': // Backward in Hebrew RTL
-            case 'PageUp':
+            case 'ArrowRight': case 'PageUp':
               e.preventDefault();
               this.prevSlide();
               break;
@@ -2072,7 +2663,6 @@
           }
         });
 
-        // Touch Swipe
         let startX = 0;
         window.addEventListener('touchstart', (e) => { startX = e.changedTouches[0].clientX; }, { passive: true });
         window.addEventListener('touchend', (e) => {
@@ -2140,6 +2730,9 @@
           targetEl.setAttribute('aria-hidden', 'false');
         }
 
+        // Trigger 3D Layer Culling & Camera Waypoints
+        ThreeSceneManager.updateVisibleLayers(targetIndex);
+
         // Slide dynamic triggers
         if (targetIndex === 7) this.renderBattleReaction();
         if (targetIndex === 9) this.renderConsequencesMetrics();
@@ -2174,9 +2767,8 @@
         }
       },
 
-      /* Slide 02 Map Selection */
       selectRegion(idx) {
-        const reg = GAME_DATA.regions[idx];
+        const reg = GAME_DATA.regions?.[idx];
         if (!reg) return;
 
         document.querySelectorAll('.map-region-pin').forEach((pin, i) => pin.classList.toggle('active', i === idx));
@@ -2189,26 +2781,23 @@
         document.getElementById('reg-meter-fill').style.background = reg.color;
       },
 
-      /* Slide 03 House Spotlight */
       spotlightHouse(houseKey, el) {
         document.querySelectorAll('.heraldic-shield-item').forEach(h => h.classList.remove('active'));
         if (el && el.classList.contains('heraldic-shield-item')) {
           el.classList.add('active');
         }
-        const data = GAME_DATA.nineHouses[houseKey];
+        const data = GAME_DATA.nineHouses?.[houseKey];
         if (data) {
-          document.getElementById('spot-house-motto').textContent = `"${data.motto}"`;
-          document.getElementById('spot-house-desc').textContent = data.desc;
+          document.getElementById('spot-house-motto').textContent = `"${data.mottoHe}"`;
+          document.getElementById('spot-house-desc').textContent = data.descHe;
         }
       },
 
-      /* Slide 04 Flame Dial */
       updateFlame(val) {
         AppState.flameIntensity = parseInt(val, 10);
         document.getElementById('flame-readout').textContent = `${val}%`;
       },
 
-      /* Slide 05 Frost Toggle */
       toggleFrost() {
         AppState.frostWiped = !AppState.frostWiped;
         const drawer = document.getElementById('frost-runes-drawer');
@@ -2222,9 +2811,8 @@
         }
       },
 
-      /* Slide 06 Loyalty Quiz with Tie-breaker (PRD 7 & 8) */
       renderQuizStep(qIdx) {
-        const q = GAME_DATA.quizQuestions[qIdx];
+        const q = GAME_DATA.quizQuestions?.[qIdx];
         if (!q) return;
 
         document.getElementById('quiz-step-title').textContent = q.title;
@@ -2258,7 +2846,6 @@
       },
 
       resolveQuiz() {
-        // Recalculate faction points (+3 each)
         AppState.decision1_scores = { targaryen: 0, stark: 0, lannister: 0, watch: 0 };
         AppState.decision1_answers.forEach((pick, qI) => {
           if (pick !== null) {
@@ -2293,7 +2880,6 @@
         this.updateSlideUI();
       },
 
-      /* Slide 07 Dynamic Battle Reaction */
       renderBattleReaction() {
         const faction = AppState.decision1_faction || 'stark';
         const titles = {
@@ -2317,7 +2903,6 @@
         el.classList.add('active');
       },
 
-      /* Slide 08 Doctrine Selection */
       selectDoctrine(key, el) {
         AppState.decision2_philosophy = key;
         document.querySelectorAll('.doctrine-tarot-card').forEach(c => c.classList.remove('selected'));
@@ -2325,12 +2910,11 @@
         this.updateSlideUI();
       },
 
-      /* Slide 09 Consequences Metrics (PRD Formulas) */
       renderConsequencesMetrics() {
         const faction = AppState.decision1_faction || 'stark';
         const doctrine = AppState.decision2_philosophy || 'just_law';
 
-        // 1. Stability (PRD 7)
+        // PRD Mathematical Formulas
         const baseStab = { targaryen: 65, stark: 85, lannister: 80, watch: 75 }[faction] || 75;
         const stabMods = {
           iron_fist: { targaryen: 15, lannister: 10, stark: -15, watch: -10 },
@@ -2340,19 +2924,16 @@
         };
         const stab = Math.min(98, Math.max(30, baseStab + (stabMods[doctrine]?.[faction] || 0)));
 
-        // 2. Prosperity (PRD 7)
         const baseProsp = { lannister: 75, stark: 70, watch: 50, targaryen: 45 }[faction] || 60;
         const prospBonus = { commerce: 25, just_law: 20, guard: 5, iron_fist: -20 }[doctrine] || 0;
         const prosp = Math.min(95, Math.max(20, baseProsp + prospBonus));
 
-        // 3. Defense (PRD 7)
         const baseDef = { watch: 95, targaryen: 90, stark: 85, lannister: 65 }[faction] || 80;
         const defBonus = { guard: 25, iron_fist: 15, just_law: 5, commerce: -15 }[doctrine] || 0;
         const def = Math.min(99, Math.max(40, baseDef + defBonus));
 
         AppState.outcome = { stability: stab, prosperity: prosp, defense: def };
 
-        // Radial Ring animation (circumference = 339.29)
         const circ = 339.29;
         document.getElementById('val-stability').textContent = `${stab}%`;
         document.getElementById('ring-stability').style.strokeDashoffset = circ - (circ * stab / 100);
@@ -2369,12 +2950,11 @@
           `החיבור בין ברית ${hName} לפילוסופיה הנבחרת ביסס יציבות פוליטית של ${stab}%, רמת חיים של ${prosp}%, ומוכנות ביטחונית של ${def}%. שבע הממלכות עוברות לעידן חדש.`;
       },
 
-      /* Slide 10 Coronation Reveal (16 -> 8 Matrix) */
       renderCoronationReveal() {
         const faction = AppState.decision1_faction || 'stark';
         const doctrine = AppState.decision2_philosophy || 'just_law';
 
-        const matrix = {
+        const matrix = GAME_DATA.decisionMatrix || {
           targaryen: { iron_fist: 'ARC-01', just_law: 'ARC-08', guard: 'ARC-07', commerce: 'ARC-08' },
           stark:     { iron_fist: 'ARC-06', just_law: 'ARC-02', guard: 'ARC-04', commerce: 'ARC-05' },
           lannister: { iron_fist: 'ARC-06', just_law: 'ARC-05', guard: 'ARC-08', commerce: 'ARC-03' },
@@ -2404,75 +2984,6 @@
         this.goToSlide(1);
       }
     };
-
-    /* Atmospheric Continuous 60 FPS Particle Canvas */
-    function initParticleCanvas() {
-      const canvas = document.getElementById('bg-canvas');
-      const ctx = canvas.getContext('2d');
-      let w = canvas.width = window.innerWidth;
-      let h = canvas.height = window.innerHeight;
-
-      window.addEventListener('resize', () => {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
-      });
-
-      const count = 110;
-      const particles = [];
-      for (let i = 0; i < count; i++) {
-        particles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 2.2 + 0.8,
-          vx: (Math.random() - 0.5) * 0.7,
-          vy: -Math.random() * 1.4 - 0.2,
-          a: Math.random() * 0.7 + 0.3
-        });
-      }
-
-      function loop() {
-        ctx.clearRect(0, 0, w, h);
-        const s = AppState.currentSlide;
-        let color = 'rgba(212, 175, 55, ';
-        let wind = 0;
-        let speed = 1.0;
-
-        if (s === 4) {
-          color = 'rgba(255, 87, 34, ';
-          speed = AppState.flameIntensity / 45;
-        } else if (s === 5) {
-          color = 'rgba(0, 229, 255, ';
-          wind = -2.2;
-          speed = 1.8;
-        } else if (s === 7) {
-          color = 'rgba(255, 140, 50, ';
-          speed = 1.6;
-        } else if (s === 10) {
-          color = 'rgba(255, 215, 0, ';
-          speed = 1.3;
-        }
-
-        for (let i = 0; i < particles.length; i++) {
-          const p = particles[i];
-          p.y += p.vy * speed;
-          p.x += (p.vx + wind) * speed;
-
-          if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
-          if (p.x < -10) p.x = w + 10;
-          if (p.x > w + 10) p.x = -10;
-
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = color + p.a + ')';
-          ctx.shadowBlur = p.r * 4;
-          ctx.shadowColor = color + '0.8)';
-          ctx.fill();
-        }
-
-        requestAnimationFrame(loop);
-      }
-      loop();
-    }
 
     document.addEventListener('DOMContentLoaded', () => {
       PresentationEngine.init();
