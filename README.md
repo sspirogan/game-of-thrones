@@ -8,7 +8,7 @@ The experience contains **10 interactive slides, two major player decisions, and
 
 [GitHub repository](https://github.com/sspirogan/game-of-thrones)
 
-<!-- Screenshot placeholder: Opening slide with the Iron Throne and the start button. Future GitHub-hosted attachment URL: SLIDE_01_GITHUB_ATTACHMENT_URL. -->
+<img width="1280" height="716" alt="image" src="https://github.com/user-attachments/assets/b8758346-6dd9-490f-b72c-923a70b68bec" />
 
 Slide 01: The Iron Throne introduces the player's claim.
 
@@ -163,7 +163,7 @@ The script's “100% coverage” message refers only to the enumerated Python co
 
 The interpreter also emitted a `SyntaxWarning` for an invalid `\B` escape in the script's historical Windows-path docstring. The warning is visible in the supplied terminal screenshot and did not prevent the successful validation run.
 
-<!-- Screenshot placeholder: Actual terminal screenshot showing Python verify-only validation results. Future GitHub-hosted attachment URL: PYTHON_VALIDATION_GITHUB_ATTACHMENT_URL. -->
+<img width="1326" height="590" alt="image" src="https://github.com/user-attachments/assets/ed7de530-496d-4b1c-9e6b-476537c60eaf" />
 
 Python validation: the supplied terminal capture shows passing combination, metric-range, archetype-reachability, and quiz-path checks.
 
@@ -201,29 +201,30 @@ Full conversation record: [AI_Interaction_Log(1_6).docx](./AI_Interaction_Log%28
 
 The opening-slide caption appears at the top of this README. The captions below identify the supplied captures of the lore gallery, winter interaction, allegiance result, realm gauges, and final coronation.
 
-<!-- Screenshot placeholder: Slide 03 showing nine noble-house shields and a separate Night's Watch panel. Future GitHub-hosted attachment URL: SLIDE_03_GITHUB_ATTACHMENT_URL. -->
+<img width="1280" height="713" alt="image" src="https://github.com/user-attachments/assets/073c89f3-9c87-4515-88b9-6444021a5c55" />
 
 Slide 03: Nine noble houses appear above the independent Night's Watch entry.
 
-<!-- Screenshot placeholder: Slide 05 showing the Wall and the frost-reveal button. Future GitHub-hosted attachment URL: SLIDE_05_GITHUB_ATTACHMENT_URL. -->
+<img width="1280" height="722" alt="image" src="https://github.com/user-attachments/assets/96aecc97-a53d-4701-a168-9125c4350aea" />
 
 Slide 05: The winter scene offers a button to reveal the hidden prophecy.
 
-<!-- Screenshot placeholder: Slide 06 showing the third quiz question and a resolved Targaryen allegiance. Future GitHub-hosted attachment URL: SLIDE_06_GITHUB_ATTACHMENT_URL. -->
+<img width="1280" height="721" alt="image" src="https://github.com/user-attachments/assets/a62ed281-29a0-42a4-be5c-e23991df6be1" />
 
 Slide 06: The three-question allegiance quiz resolves to House Targaryen in this captured playthrough.
 
-<!-- Screenshot placeholder: Slide 09 showing 65 percent stability, 70 percent prosperity, and 75 percent defense. Future GitHub-hosted attachment URL: SLIDE_09_GITHUB_ATTACHMENT_URL. -->
+<img width="1280" height="722" alt="image" src="https://github.com/user-attachments/assets/45af596b-d449-4842-8bef-47d56115e054" />
 
 Slide 09: This captured result displays 65% stability, 70% prosperity, and 75% defense.
 
-<!-- Screenshot placeholder: Slide 10 showing The Pragmatic Restorer ending and the restart button. Future GitHub-hosted attachment URL: SLIDE_10_GITHUB_ATTACHMENT_URL. -->
+<img width="1280" height="722" alt="image" src="https://github.com/user-attachments/assets/27bafc10-aaaf-41c9-8a9d-89cd693a1b0d" />
+
 
 Slide 10: The coronation reveals The Pragmatic Restorer and offers a new journey.
 
 ## Demo Video
 
-<!-- Video placeholder: DEMO_VIDEO_GITHUB_URL. Add the future GitHub-hosted video URL here when available; no video URL has been supplied, so no live video preview is embedded. -->
+https://github.com/user-attachments/assets/d3edaad4-f5b8-4457-b763-fb7e0cc406c0
 
 Suggested caption: “Project demo: a journey from the Iron Throne through allegiance and doctrine to the final coronation.”
 
