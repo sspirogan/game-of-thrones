@@ -195,7 +195,7 @@ The developer supplied the creative direction, identified shortcomings, requeste
 
 The process combined generation, critique, targeted repair, and documentation review. AI completion reports were not treated as a substitute for source inspection, recorded validation output, or browser testing.
 
-Full conversation record: [AI Conversation History](./AI_Interaction_Log%281_6%29.md), containing the prompts, review exchanges, and recorded development reports.
+Full conversation record: [AI Conversation History](./prompts/AI_Interaction_Log%281_6%29.md), containing the prompts, review exchanges, and recorded development reports.
 
 ## Presentation Screenshots
 
